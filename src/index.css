@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;500;600&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "PartialSans";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/PartialSansKR-Regular.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+
+@layer base {
+  * {
+  }
+
+  body {
+    @apply bg-gray-warm min-h-screen;
+    font-family: "Noto Sans KR", sans-serif;
+    line-height: 1.6;
+    color: #2d2d2d;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* 모바일 컨테이너 */
+  .mobile-container {
+    @apply max-w-md mx-auto relative;
+  }
+
+  /* 섹션 스타일 */
+  .wedding-section {
+    @apply py-8 px-6;
+  }
+
+  /* 버튼 스타일 */
+  .btn-primary {
+    @apply bg-rose-primary hover:bg-rose-secondary text-white font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-text-primary border border-rose-primary/30 font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* 카드 스타일 */
+  .wedding-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100;
+  }
+
+  /* 텍스트 스타일 */
+  .wedding-title {
+    @apply text-xl font-medium text-text-primary mb-4 text-center;
+  }
+
+  .wedding-subtitle {
+    @apply text-lg font-medium text-text-primary mb-2;
+  }
+
+  .wedding-text {
+    @apply text-text-secondary leading-relaxed;
+  }
+
+  /* 장식적 요소 */
+  .decorative-dots {
+    @apply flex items-center justify-center space-x-1;
+  }
+
+  .decorative-dot {
+    @apply w-1 h-1 bg-rose-primary rounded-full;
+  }
+
+  /* 그라데이션 배경 */
+  .gradient-bg {
+    @apply bg-gradient-to-b from-cream-primary to-white;
+  }
+}
+
+@layer utilities {
+  /* 모바일 터치 영역 */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* 애니메이션 클래스 */
+  .animate-heart {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  /* 날짜 애니메이션 */
+  .date-slide-from-left {
+    animation: slideFromLeft 1.2s ease-out forwards;
+  }
+
+  .date-slide-from-right {
+    animation: slideFromRight 1.2s ease-out forwards;
+  }
+
+  .date-delay-1 {
+    animation-delay: 0.3s;
+  }
+
+  .date-delay-2 {
+    animation-delay: 0.6s;
+  }
+
+  .date-delay-3 {
+    animation-delay: 0.9s;
+  }
+
+  .fade-in-delayed {
+    animation: fadeIn 1s ease-out forwards;
+    animation-delay: 1.5s;
+  }
+
+  @keyframes slideFromLeft {
+    0% {
+      transform: translateX(-100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideFromRight {
+    0% {
+      transform: translateX(100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* 그라데이션 텍스트 */
+  .text-gradient {
+    @apply bg-gradient-to-r from-rose-primary to-rose-secondary bg-clip-text text-transparent;
+  }
+}

@@ -1,0 +1,187 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# 모바일 청첩장 프로젝트 - Cursor Rules
+
+## 프로젝트 개요
+
+- **프로젝트**: 모바일 청첩장 웹앱
+- **뷰포트**: 모바일 웹뷰 (PC에서도 모바일 뷰로 표시)
+- **주요 기술**: React, TypeScript, Tailwind CSS, shadcn/ui
+- **결혼 정보**: 성욱 ♥ 회진, 2025.12.27 결혼식
+
+## 기술 스택 및 설정
+
+### Core Technologies
+
+- React 18+ with TypeScript
+- Tailwind CSS (모바일 퍼스트)
+- shadcn/ui 컴포넌트
+- Lucide React 아이콘
+- 반응형 웹 (모바일 우선, 최대 480px 기준)
+
+### 코딩 스타일
+
+- **컴포넌트**: 함수형 컴포넌트 + React Hooks 사용
+- **스타일링**: Tailwind utility classes 우선, 커스텀 CSS 최소화
+- **타입스크립트**: 엄격한 타입 정의, interface 활용
+- **파일명**: kebab-case (wedding-calendar.tsx)
+- **변수명**: camelCase, 의미있는 이름 사용
+
+## UI/UX 가이드라인
+
+### 디자인 컨셉
+
+- **분위기**: 따뜻하고 축하받는 느낌, 로맨틱하면서 신나는 분위기
+- **컬러 팔레트**:
+  - Primary: 로즈골드/핑크 계열 (#F8BBD9, #E879F9)
+  - Secondary: 크림/베이지 계열 (#FEF7ED, #F3E8FF)
+  - Accent: 골드 계열 (#FCD34D, #FBBF24)
+- **폰트**: 한글 가독성 좋은 폰트, 제목은 더 우아한 느낌
+- **여백**: 충분한 패딩으로 편안한 느낌
+
+### 모바일 최적화
+
+- **뷰포트**: `max-w-md mx-auto` 기본 사용
+- **터치**: 최소 44px 터치 영역 확보
+- **스크롤**: 부드러운 스크롤, 섹션별 여백 충분히
+- **로딩**: 스켈레톤 UI 또는 우아한 로딩 상태
+
+## 컴포넌트 구조
+
+### 주요 섹션 (순서대로)
+
+1. **WeddingCalendar** - 달력 형식, 2025.12.27 강조
+2. **CountdownTimer** - D-day 카운터 (분,초 단위), "성욱 ♥ 회진 결혼식 몇일 남았어요"
+3. **LocationInfo** - 지도, 교통편 (지하철/버스), 주차 안내
+4. **PhotoGallery** - 사진첩, 이미지 갤러리
+5. **MoneyGift** - 마음 전하는곳 (아코디언 6개: 신랑, 신부, 신랑부모님, 신부부모님)
+6. **DiningInfo** - 식당 위치 및 사전 안내
+7. **AttendanceCheck** - 참석의사 체크 (모달), 구분/성함/인원/식사여부
+8. **PhotoUpload** - 결혼식 사진 업로드
+
+### shadcn/ui 컴포넌트 활용
+
+- **Accordion**: MoneyGift 섹션
+- **Dialog/Modal**: AttendanceCheck
+- **Button**: 다양한 액션 버튼
+- **Card**: 각 섹션 래퍼
+- **Input/Form**: 참석 체크 폼
+- **Toast**: 알림 (계좌번호 복사 등)
+- **Badge**: D-day, 날짜 강조
+- **Separator**: 섹션 구분
+
+## 기능별 구현 가이드
+
+### 1. 달력 (WeddingCalendar)
+
+```tsx
+// 2025.12.27 강조, 주변 날짜들과 함께 표시
+// Tailwind: bg-rose-500, text-white for 결혼일
+// 달력 그리드는 grid-cols-7 사용
+```
+
+### 2. 카운트다운 (CountdownTimer)
+
+```tsx
+// useEffect + setInterval로 실시간 업데이트
+// 남은 일/시간/분/초 표시
+// 하단에 "성욱 ♥ 회진 결혼식 몇일 남았어요" 메시지
+```
+
+### 3. 계좌번호 복사 (MoneyGift)
+
+```tsx
+// navigator.clipboard.writeText() 사용
+// 복사 완료시 Toast 알림
+// 6개 아코디언: 신랑, 신부, 신랑아버지, 신랑어머니, 신부아버지, 신부어머니
+```
+
+### 4. 참석 체크 모달 (AttendanceCheck)
+
+```tsx
+// shadcn Dialog 사용
+// 폼 필드: 구분(신랑측/신부측), 성함, 참석인원, 식사여부
+// 식사여부: 예정/안함/미정 라디오 버튼
+```
+
+## 코드 품질 기준
+
+### TypeScript 타입 정의
+
+```tsx
+interface WeddingData {
+  groomName: string;
+  brideName: string;
+  weddingDate: Date;
+  venue: VenueInfo;
+}
+
+interface AttendanceForm {
+  side: "groom" | "bride";
+  name: string;
+  attendeeCount: number;
+  mealOption: "yes" | "no" | "undecided";
+}
+```
+
+### 에러 처리
+
+- 네트워크 요청시 에러 바운더리
+- 폼 검증 및 사용자 친화적 에러 메시지
+- 이미지 로딩 실패시 대체 이미지
+
+### 성능 최적화
+
+- 이미지 lazy loading
+- React.memo 적절히 사용
+- 불필요한 리렌더링 방지
+
+## 파일 구조
+
+```
+src/
+├── components/
+│   ├── sections/
+│   │   ├── WeddingCalendar.tsx
+│   │   ├── CountdownTimer.tsx
+│   │   ├── LocationInfo.tsx
+│   │   ├── PhotoGallery.tsx
+│   │   ├── MoneyGift.tsx
+│   │   ├── DiningInfo.tsx
+│   │   ├── AttendanceCheck.tsx
+│   │   └── PhotoUpload.tsx
+│   └── ui/ (shadcn components)
+├── lib/
+│   └── utils.ts
+├── types/
+│   └── wedding.ts
+└── styles/
+    └── globals.css
+```
+
+## 특별 지침
+
+### 웨딩 톤앤매너
+
+- 모든 텍스트는 따뜻하고 축하받는 느낌
+- 아이콘은 하트, 꽃, 반지 등 웨딩 테마
+- 애니메이션은 부드럽고 우아하게 (duration-300, ease-in-out)
+- 색상은 파스텔 톤, 너무 진하지 않게
+
+### 접근성
+
+- 적절한 contrast ratio 유지
+- 스크린 리더를 위한 alt 텍스트
+- 키보드 네비게이션 지원
+
+### 반응형 고려사항
+
+- 모바일 퍼스트, 하지만 태블릿까지 고려
+- 텍스트 크기는 16px 이상
+- 터치 영역 충분히 확보
+
+이 규칙들을 따라 코드를 작성해 주세요. 웨딩의 특별한 순간을 기념하는 아름다운 청첩장을 만들어보세요! 💕
