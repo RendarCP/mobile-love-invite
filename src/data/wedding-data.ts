@@ -1,7 +1,7 @@
 /**
  * 웨딩 관련 정적 데이터
  */
-import { WeddingInfo, AccountInfo, DiningInfo } from "@/types/wedding";
+import type { WeddingInfo, AccountInfo, DiningInfo } from "@/types/wedding";
 
 // 기본 웨딩 정보
 export const weddingInfo: WeddingInfo = {

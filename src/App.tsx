@@ -1,8 +1,6 @@
-import { Heart, Phone, Car, Train, Bus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Heart, Car, Train, Bus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MoneyGift from "@/components/sections/MoneyGift";
-import GuestBook from "@/components/sections/GuestBook";
 import WeddingCalendar from "@/components/sections/WeddingCalendar";
 import PhotoGallery from "@/components/sections/PhotoGallery";
 import NaverMap from "@/components/sections/NaverMap";
