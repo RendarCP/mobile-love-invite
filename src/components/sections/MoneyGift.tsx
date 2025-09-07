@@ -1,13 +1,6 @@
 import { useState } from "react";
-import { Copy, Check, CreditCard, Gift } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Accordion,
   AccordionContent,
@@ -20,159 +13,151 @@ interface AccountInfo {
   name: string;
   bank: string;
   account: string;
-  kakaopay?: string;
+  kakaopay?: boolean;
 }
 
-const accountsData: AccountInfo[] = [
+// 신랑측 계좌정보
+const groomAccounts: AccountInfo[] = [
   {
     relation: "신랑",
-    name: "성욱",
+    name: "최성욱",
     bank: "신한은행",
     account: "110-123-456789",
-    kakaopay: "010-1234-5678",
+    kakaopay: true,
   },
   {
-    relation: "신부",
-    name: "회진",
+    relation: "신랑",
+    name: "최도현",
+    bank: "신한은행",
+    account: "110-123-456789",
+  },
+];
+
+// 신부측 계좌정보
+const brideAccounts: AccountInfo[] = [
+  {
+    relation: "국민",
+    name: "이하나",
     bank: "국민은행",
-    account: "123-456-789012",
+    account: "200123-45-678900",
+    kakaopay: true,
   },
   {
-    relation: "신랑 아버지",
-    name: "아버지 성함",
-    bank: "우리은행",
-    account: "1002-123-456789",
-  },
-  {
-    relation: "신랑 어머니",
-    name: "어머니 성함",
-    bank: "하나은행",
-    account: "123-456789-12345",
-  },
-  {
-    relation: "신부 아버지",
-    name: "아버지 성함",
-    bank: "농협은행",
-    account: "123-12-123456",
-  },
-  {
-    relation: "신부 어머니",
-    name: "어머니 성함",
-    bank: "KB국민은행",
-    account: "123456-01-123456",
+    relation: "신한",
+    name: "이상대",
+    bank: "신한은행",
+    account: "110-123-456789",
   },
 ];
 
 export default function MoneyGift() {
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
-  const copyToClipboard = async (text: string, type: string) => {
+  const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopiedAccount(`${type}-${text}`);
+      setCopiedAccount(text);
       setTimeout(() => setCopiedAccount(null), 2000);
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
   };
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="bg-gold-primary hover:bg-gold-secondary text-white">
-          <Gift className="w-4 h-4 mr-2" />
-          계좌번호 보기
+  const renderAccountCard = (account: AccountInfo, index: number) => (
+    <div
+      key={index}
+      className="bg-white p-4 rounded-lg border border-gray-200 transform transition-all duration-300 hover:shadow-md hover:scale-[1.02] animate-fade-in"
+      style={{
+        animationDelay: `${index * 100}ms`,
+        animationFillMode: "both",
+      }}
+    >
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-gray-700 text-sm">{account.bank}</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => copyToClipboard(account.account)}
+          className="p-2 h-auto text-gray-600 hover:bg-gray-100 transition-all duration-200 hover:scale-110"
+        >
+          {copiedAccount === account.account ? (
+            <Check className="w-4 h-4 text-green-500 animate-bounce" />
+          ) : (
+            <Copy className="w-4 h-4 transition-transform duration-200" />
+          )}
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-sm mx-auto">
-        <DialogHeader>
-          <DialogTitle className="text-center text-text-primary">
-            마음 전하는 곳
-          </DialogTitle>
-        </DialogHeader>
+      </div>
+      <div className="text-gray-800 font-mono text-sm mb-1 transition-all duration-200">
+        {account.account}
+      </div>
+      <div className="flex items-center justify-between">
+        <span className="text-gray-600 text-sm">{account.name}</span>
+        {account.kakaopay && (
+          <div className="bg-yellow-400 text-black text-xs px-2 py-1 rounded font-bold animate-pulse">
+            🏷 pay
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
-        <div className="max-h-96 overflow-y-auto">
-          <Accordion type="single" collapsible className="w-full">
-            {accountsData.map((account, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left">
-                  <div className="flex items-center space-x-2">
-                    <CreditCard className="w-4 h-4 text-gold-primary" />
-                    <span>{account.relation}</span>
-                    <span className="text-text-secondary text-sm">
-                      ({account.name})
-                    </span>
-                  </div>
+  return (
+    <section className="px-6 py-8">
+      <div className="max-w-md mx-auto">
+        <div className="space-y-4">
+          {/* 신랑측 계좌번호 아코디언 */}
+          <div
+            className="animate-slide-up"
+            style={{ animationDelay: "200ms", animationFillMode: "both" }}
+          >
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem
+                value="groom"
+                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-blue-300"
+              >
+                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-blue-50 group">
+                  <span className="group-hover:text-blue-700 transition-colors duration-200">
+                    신랑측 계좌번호
+                  </span>
                 </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 pt-2">
-                    {/* 은행 계좌 */}
-                    <div className="bg-gray-warm p-3 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-text-primary">
-                          {account.bank}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(account.account, "bank")
-                          }
-                          className="p-1 h-auto"
-                        >
-                          {copiedAccount === `bank-${account.account}` ? (
-                            <Check className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <Copy className="w-4 h-4 text-text-secondary" />
-                          )}
-                        </Button>
-                      </div>
-                      <p className="text-text-secondary font-mono text-sm">
-                        {account.account}
-                      </p>
-                      <p className="text-text-primary font-medium text-sm mt-1">
-                        {account.name}
-                      </p>
-                    </div>
-
-                    {/* 카카오페이 (있는 경우) */}
-                    {account.kakaopay && (
-                      <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-text-primary">
-                            카카오페이
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              copyToClipboard(account.kakaopay!, "kakao")
-                            }
-                            className="p-1 h-auto"
-                          >
-                            {copiedAccount === `kakao-${account.kakaopay}` ? (
-                              <Check className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-text-secondary" />
-                            )}
-                          </Button>
-                        </div>
-                        <p className="text-text-secondary font-mono text-sm">
-                          {account.kakaopay}
-                        </p>
-                      </div>
+                <AccordionContent className="px-4 pb-4 overflow-hidden">
+                  <div className="space-y-3">
+                    {groomAccounts.map((account, index) =>
+                      renderAccountCard(account, index)
                     )}
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+            </Accordion>
+          </div>
 
-        <div className="text-center mt-4 text-xs text-text-secondary">
-          계좌번호를 터치하시면 복사됩니다
+          {/* 신부측 계좌번호 아코디언 */}
+          <div
+            className="animate-slide-up"
+            style={{ animationDelay: "400ms", animationFillMode: "both" }}
+          >
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem
+                value="bride"
+                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-pink-300"
+              >
+                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-pink-50 group">
+                  <span className="group-hover:text-pink-700 transition-colors duration-200">
+                    신부측 계좌번호
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4 overflow-hidden">
+                  <div className="space-y-3">
+                    {brideAccounts.map((account, index) =>
+                      renderAccountCard(account, index)
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </section>
   );
 }

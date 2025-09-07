@@ -22,42 +22,19 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
   const weddingDay = 27;
 
   // 해당 월의 첫 번째 날과 마지막 날
-  const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const firstDayOfWeek = firstDay.getDay(); // 0 = 일요일
   const daysInMonth = lastDay.getDate();
 
   // 달력에 표시할 날짜들 생성
   const calendarDays = [];
 
   // 이전 달의 마지막 날짜들
-  const prevMonth = new Date(year, month - 1, 0);
-  const prevMonthDays = prevMonth.getDate();
-
-  // 이전 달의 날짜들로 빈 칸 채우기
-  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-    calendarDays.push({
-      day: prevMonthDays - i,
-      isCurrentMonth: false,
-      isPrevMonth: true,
-    });
-  }
 
   // 현재 달의 날짜들
   for (let day = 1; day <= daysInMonth; day++) {
     calendarDays.push({
       day: day,
       isCurrentMonth: true,
-      isPrevMonth: false,
-    });
-  }
-
-  // 다음 달의 날짜들로 나머지 칸 채우기
-  const remainingCells = 42 - calendarDays.length; // 6주 * 7일
-  for (let day = 1; day <= remainingCells; day++) {
-    calendarDays.push({
-      day: day,
-      isCurrentMonth: false,
       isPrevMonth: false,
     });
   }
@@ -87,17 +64,8 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
       <div className="mb-6">
         {/* 요일 헤더 */}
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {weekDays.map((day, index) => (
-            <div
-              key={day}
-              className={`text-center text-sm font-medium py-2 ${
-                index === 0
-                  ? "text-red-500"
-                  : index === 6
-                  ? "text-blue-500"
-                  : "text-text-secondary"
-              }`}
-            >
+          {weekDays.map((day) => (
+            <div key={day} className={`text-center text-sm font-medium py-2 `}>
               {day}
             </div>
           ))}

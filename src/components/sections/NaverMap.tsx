@@ -48,10 +48,15 @@ const NaverMap: React.FC<NaverMapProps> = ({
         scaleControl: false,
         logoControl: false,
         mapDataControl: false,
-        // zoomControl: true,
+        zoomControl: false,
+        disableTwoFingerTapZoom: false,
         zoomControlOptions: {
           position: window.naver.maps.Position.TOP_RIGHT,
         },
+        draggable: false,
+        scrollWheel: false,
+        disableDoubleTapZoom: true,
+        disableDoubleClickZoom: true,
       };
 
       mapRef.current = new window.naver.maps.Map(
@@ -60,85 +65,85 @@ const NaverMap: React.FC<NaverMapProps> = ({
       );
 
       // 마커 생성
-      const marker = new window.naver.maps.Marker({
+      new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(latitude, longitude),
         map: mapRef.current,
         title: venueName,
-        icon: {
-          content: `
-            <div style="
-              background: #F4C2C2;
-              color: white;
-              padding: 8px 12px;
-              border-radius: 20px;
-              font-size: 12px;
-              font-weight: 600;
-              box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-              position: relative;
-              border: 2px solid white;
-            ">
-              💒 ${venueName}
-              <div style="
-                position: absolute;
-                bottom: -5px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 0;
-                height: 0;
-                border-left: 6px solid transparent;
-                border-right: 6px solid transparent;
-                border-top: 6px solid #F4C2C2;
-              "></div>
-            </div>
-          `,
-          anchor: new window.naver.maps.Point(0, 0),
-        },
+        // icon: {
+        //   content: `
+        //     <div style="
+        //       background: #F4C2C2;
+        //       color: white;
+        //       padding: 8px 12px;
+        //       border-radius: 20px;
+        //       font-size: 12px;
+        //       font-weight: 600;
+        //       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        //       position: relative;
+        //       border: 2px solid white;
+        //     ">
+        //       💒 ${venueName}
+        //       <div style="
+        //         position: absolute;
+        //         bottom: -5px;
+        //         left: 50%;
+        //         transform: translateX(-50%);
+        //         width: 0;
+        //         height: 0;
+        //         border-left: 6px solid transparent;
+        //         border-right: 6px solid transparent;
+        //         border-top: 6px solid #F4C2C2;
+        //       "></div>
+        //     </div>
+        //   `,
+        //   anchor: new window.naver.maps.Point(0, 0),
+        // },
       });
 
-      // 정보창 생성
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding: 16px; max-width: 200px;">
-            <h4 style="margin: 0 0 8px 0; color: #2D2D2D; font-size: 14px; font-weight: 600;">
-              ${venueName}
-            </h4>
-            <p style="margin: 0; color: #666; font-size: 12px; line-height: 1.4;">
-              ${venueAddress}
-            </p>
-            <div style="margin-top: 12px;">
-              <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(
-                venueName
-              )}', '_blank')" 
-                style="
-                  background: #F4C2C2;
-                  color: white;
-                  border: none;
-                  padding: 6px 12px;
-                  border-radius: 4px;
-                  font-size: 11px;
-                  cursor: pointer;
-                  font-weight: 500;
-                ">
-                네이버지도 열기
-              </button>
-            </div>
-          </div>
-        `,
-        borderWidth: 0,
-        backgroundColor: "white",
-        borderColor: "#F4C2C2",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-      });
+      // // 정보창 생성
+      // const infoWindow = new window.naver.maps.InfoWindow({
+      //   content: `
+      //     <div style="padding: 16px; max-width: 200px;">
+      //       <h4 style="margin: 0 0 8px 0; color: #2D2D2D; font-size: 14px; font-weight: 600;">
+      //         ${venueName}
+      //       </h4>
+      //       <p style="margin: 0; color: #666; font-size: 12px; line-height: 1.4;">
+      //         ${venueAddress}
+      //       </p>
+      //       <div style="margin-top: 12px;">
+      //         <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(
+      //           venueName
+      //         )}', '_blank')"
+      //           style="
+      //             background: #F4C2C2;
+      //             color: white;
+      //             border: none;
+      //             padding: 6px 12px;
+      //             border-radius: 4px;
+      //             font-size: 11px;
+      //             cursor: pointer;
+      //             font-weight: 500;
+      //           ">
+      //           네이버지도 열기
+      //         </button>
+      //       </div>
+      //     </div>
+      //   `,
+      //   borderWidth: 0,
+      //   backgroundColor: "white",
+      //   borderColor: "#F4C2C2",
+      //   borderRadius: "8px",
+      //   boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+      // });
 
-      // 마커 클릭 시 정보창 표시
-      window.naver.maps.Event.addListener(marker, "click", () => {
-        if (infoWindow.getMap()) {
-          infoWindow.close();
-        } else {
-          infoWindow.open(mapRef.current, marker);
-        }
-      });
+      // // 마커 클릭 시 정보창 표시
+      // window.naver.maps.Event.addListener(marker, "click", () => {
+      //   if (infoWindow.getMap()) {
+      //     infoWindow.close();
+      //   } else {
+      //     infoWindow.open(mapRef.current, marker);
+      //   }
+      // });
     };
 
     // 네이버 맵 API 로드 확인
@@ -199,7 +204,7 @@ const NaverMap: React.FC<NaverMapProps> = ({
               window.open(
                 `https://map.naver.com/v5/search/${encodeURIComponent(
                   venueName
-                )}`,
+                )}/place/366784007?c=15.00,0,0,0,dh&placePath=/home?entry=bmp&from=map&fromPanelNum=2&timestamp=202509052343&locale=ko&svcName=map_pcv5&searchText=상록아트홀`,
                 "_blank"
               )
             }
@@ -209,27 +214,34 @@ const NaverMap: React.FC<NaverMapProps> = ({
           </button>
           <button
             onClick={() =>
-              window.open(
-                `https://map.kakao.com/link/search/${encodeURIComponent(
-                  venueName
-                )}`,
-                "_blank"
-              )
+              window.open(`https://kko.kakao.com/OXftsQIo4C`, "_blank")
             }
             className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
           >
             카카오맵
           </button>
           <button
-            onClick={() =>
-              window.open(
-                `https://maps.google.com/maps?q=${latitude},${longitude}`,
-                "_blank"
-              )
-            }
+            onClick={() => {
+              // 티맵 앱 스키마 (길찾기 형태)
+              const tmapAppUrl = `tmap://route?goalx=${longitude}&goaly=${latitude}&goalname=${encodeURIComponent(
+                venueName
+              )}`;
+
+              // 모바일에서 앱 스키마 시도
+              if (
+                /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                  navigator.userAgent
+                )
+              ) {
+                window.location.href = tmapAppUrl;
+              } else {
+                // PC에서는 티맵 웹사이트로 이동
+                window.open("https://www.tmap.co.kr", "_blank");
+              }
+            }}
             className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
           >
-            구글맵
+            티맵
           </button>
         </div>
       </div>

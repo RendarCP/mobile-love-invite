@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -66,6 +66,10 @@ export default function PhotoGallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
+    null
+  );
 
   const displayedPhotos = showAll ? photos : photos.slice(0, 6);
 
@@ -74,21 +78,92 @@ export default function PhotoGallery() {
     setCurrentIndex(index);
   };
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setSelectedPhoto(null);
+  }, []);
+
+  const goToPrevious = useCallback(() => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+    setSlideDirection("right");
+
+    setTimeout(() => {
+      const newIndex = currentIndex > 0 ? currentIndex - 1 : photos.length - 1;
+      setCurrentIndex(newIndex);
+      setSelectedPhoto(photos[newIndex]);
+
+      setTimeout(() => {
+        setSlideDirection(null);
+        setIsTransitioning(false);
+      }, 50);
+    }, 150);
+  }, [isTransitioning, currentIndex]);
+
+  const goToNext = useCallback(() => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+    setSlideDirection("left");
+
+    setTimeout(() => {
+      const newIndex = currentIndex < photos.length - 1 ? currentIndex + 1 : 0;
+      setCurrentIndex(newIndex);
+      setSelectedPhoto(photos[newIndex]);
+
+      setTimeout(() => {
+        setSlideDirection(null);
+        setIsTransitioning(false);
+      }, 50);
+    }, 150);
+  }, [isTransitioning, currentIndex]);
+
+  // 터치/스와이프 지원
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const goToPrevious = () => {
-    const newIndex = currentIndex > 0 ? currentIndex - 1 : photos.length - 1;
-    setCurrentIndex(newIndex);
-    setSelectedPhoto(photos[newIndex]);
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  const goToNext = () => {
-    const newIndex = currentIndex < photos.length - 1 ? currentIndex + 1 : 0;
-    setCurrentIndex(newIndex);
-    setSelectedPhoto(photos[newIndex]);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
   };
+
+  // 키보드 네비게이션 지원
+  useEffect(() => {
+    if (!selectedPhoto) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        goToPrevious();
+      } else if (e.key === "ArrowRight") {
+        goToNext();
+      } else if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPhoto, goToPrevious, goToNext, closeModal]);
 
   return (
     <div>
@@ -231,53 +306,62 @@ export default function PhotoGallery() {
       {/* 사진 모달 */}
       {selectedPhoto && (
         <Dialog open={!!selectedPhoto} onOpenChange={() => closeModal()}>
-          <DialogContent className="max-w-4xl w-full h-full max-h-[90vh] p-0 bg-black">
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* 닫기 버튼 */}
+          <DialogContent className="max-w-full w-full h-full max-h-screen p-0 bg-black border-none">
+            <div className="relative w-full h-full flex items-center justify-center z-100">
+              {/* 사진 갯수 표시 (왼쪽 위) */}
+              <div className="absolute top-6 left-6 z-50 text-white/80 text-sm font-light bg-gray-300 rounded-full px-2 py-1">
+                {currentIndex + 1} / {photos.length}
+              </div>
+
+              {/* 닫기 버튼 (오른쪽 위) */}
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 z-50 text-white hover:text-gray-300 transition-colors"
+                className="absolute top-6 right-6 z-50 text-gray-500 hover:text-gray-300 transition-colors duration-200 p-1"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
 
               {/* 이전 버튼 */}
               <button
                 onClick={goToPrevious}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40 text-white hover:text-gray-300 transition-colors"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40 text-white/70 hover:text-white transition-colors duration-200 p-2"
               >
-                <ChevronLeft className="w-8 h-8" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
 
               {/* 다음 버튼 */}
               <button
                 onClick={goToNext}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40 text-white hover:text-gray-300 transition-colors"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40 text-white/70 hover:text-white transition-colors duration-200 p-2"
               >
-                <ChevronRight className="w-8 h-8" />
+                <ChevronRight className="w-6 h-6" />
               </button>
 
-              {/* 이미지 */}
-              <div className="w-full h-full flex items-center justify-center p-8">
-                <img
-                  src={selectedPhoto.src}
-                  alt={selectedPhoto.alt}
-                  className="max-w-full max-h-full object-contain"
-                />
-              </div>
-
-              {/* 캡션 */}
-              {selectedPhoto.caption && (
-                <div className="absolute bottom-4 left-4 right-4 text-center">
-                  <p className="text-white bg-black bg-opacity-50 px-4 py-2 rounded-lg">
-                    {selectedPhoto.caption}
-                  </p>
+              {/* 이미지 - 슬라이드 효과와 함께 꽉차게 표시 */}
+              <div
+                className="w-full h-full flex items-center justify-center overflow-hidden"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+              >
+                <div
+                  className={`w-full h-full ${
+                    slideDirection === "left"
+                      ? "slide-exit-left"
+                      : slideDirection === "right"
+                      ? "slide-exit-right"
+                      : isTransitioning
+                      ? "opacity-0"
+                      : "opacity-100"
+                  } transition-opacity duration-200 ease-out`}
+                >
+                  <img
+                    src={selectedPhoto.src}
+                    alt={selectedPhoto.alt}
+                    className="w-full h-full object-cover select-none"
+                    draggable={false}
+                  />
                 </div>
-              )}
-
-              {/* 사진 인덱스 */}
-              <div className="absolute top-4 left-4 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
-                {currentIndex + 1} / {photos.length}
               </div>
             </div>
           </DialogContent>

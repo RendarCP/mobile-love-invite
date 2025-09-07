@@ -4,6 +4,38 @@ import MoneyGift from "@/components/sections/MoneyGift";
 import WeddingCalendar from "@/components/sections/WeddingCalendar";
 import PhotoGallery from "@/components/sections/PhotoGallery";
 import NaverMap from "@/components/sections/NaverMap";
+import PhotoUpload from "@/components/sections/PhotoUpload";
+
+// 카카오톡 SDK 타입 정의
+interface KakaoShareOptions {
+  objectType: string;
+  content: {
+    title: string;
+    description: string;
+    imageUrl: string;
+    link: {
+      mobileWebUrl: string;
+      webUrl: string;
+    };
+  };
+  buttons: Array<{
+    title: string;
+    link: {
+      mobileWebUrl: string;
+      webUrl: string;
+    };
+  }>;
+}
+
+declare global {
+  interface Window {
+    Kakao?: {
+      Share?: {
+        sendDefault: (options: KakaoShareOptions) => void;
+      };
+    };
+  }
+}
 
 /**
  * 모바일 청첩장 메인 앱 컴포넌트
@@ -70,13 +102,13 @@ function App() {
           className="absolute inset-0 flex items-center justify-center z-20"
         >
           <div className="text-center">
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider drop-shadow-2xl mb-2 opacity-0 date-slide-from-left date-delay-1">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider drop-shadow-2xl mb-4 opacity-0 date-slide-from-left date-delay-1">
               25
             </div>
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-2 opacity-0 date-slide-from-right date-delay-2">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-4 opacity-0 date-slide-from-right date-delay-2">
               12
             </div>
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-2 opacity-0 date-slide-from-left date-delay-3">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-4 opacity-0 date-slide-from-left date-delay-3">
               27
             </div>
           </div>
@@ -115,23 +147,6 @@ function App() {
           <div className="flex justify-center mb-4">
             <Heart className="w-6 h-6 text-rose-primary/50" />
           </div>
-        </div>
-
-        {/* 인사말 내용 */}
-        <div className="text-text-secondary leading-relaxed space-y-4 text-sm">
-          <p>
-            두 사람이 꽃과 나무처럼 같아야서
-            <br />
-            서로의 모든 것이 되기 위해
-          </p>
-          <p>
-            오랜 기다림 끝에 혼례식을 치르는 날
-            <br />
-            새삶은 더욱 아름다워라
-          </p>
-          <p className="text-text-primary font-medium">
-            이해인, &lt;사랑의 사람들이여&gt;
-          </p>
         </div>
 
         {/* 구분선 */}
@@ -255,37 +270,38 @@ function App() {
 
         {/* 교통편 안내 */}
         <div id="transport-info" className="space-y-4">
-          <div className="flex items-start space-x-3">
-            <Train className="w-5 h-5 text-sage-primary mt-1" />
-            <div>
+          <div className="flex items-start">
+            <Train className="w-5 h-5 text-sage-primary mt-1 mr-4" />
+            <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">지하철</h4>
               <p className="text-text-secondary text-sm">
-                5호선 광나루역 1번 출구 → 셔틀버스 이용
+                2호선, 수인분당선 "선릉역" 5번 출구 도보 5분
                 <br />
-                2호선 강변역 1번 출구 → 택시 10분
+                셔틀버스: 선릉역 5번 출구에서 운행
               </p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3">
-            <Bus className="w-5 h-5 text-sage-primary mt-1" />
-            <div>
+          <div className="flex items-start">
+            <Bus className="w-5 h-5 text-sage-primary mt-1 mr-4" />
+            <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">버스</h4>
               <p className="text-text-secondary text-sm">
-                광나루역.한양대앞 정류장 (2224, 2412, 6411)
-                <br />→ 무료 셔틀버스 환승
+                KT 강남지사 하차: 141(도봉산), 242(중랑,신내역), 361(여의도)
+                <br />
+                한국기술센터, 상록회관 하차: 146(상계동), 341(하남), 360(송파),
+                740(덕은동)
               </p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3">
-            <Car className="w-5 h-5 text-sage-primary mt-1" />
-            <div>
-              <h4 className="font-medium text-text-primary text-sm">자가용</h4>
+          <div className="flex items-start">
+            <Car className="w-5 h-5 text-sage-primary mt-1 mr-4" />
+            <div className="flex-1">
+              <h4 className="font-medium text-text-primary text-sm">자동차</h4>
               <p className="text-text-secondary text-sm">
-                발레파킹 서비스 이용 가능
-                <br />
-                내비게이션: 그랜드 워커힐 서울 검색
+                네비게이션 "서울상록회관" <br />
+                또는 "서울시 강남구 언주로 508" 입력
               </p>
             </div>
           </div>
@@ -313,17 +329,143 @@ function App() {
         </div>
       </section>
 
-      {/* 푸터 */}
-      <footer
-        id="footer"
-        className="bg-text-primary text-white text-center py-6"
+      {/* 스냅사진 업로드 섹션 */}
+      <PhotoUpload />
+
+      {/* 감사 인사 */}
+      <div
+        className="relative h-screen bg-cover bg-center bg-no-repeat text-gray-700 text-center flex items-center justify-center"
+        style={{
+          backgroundImage: "url('/images/KSC03250_s-1.jpg')",
+          WebkitMaskImage: `linear-gradient(180deg, 
+            transparent, 
+            rgba(0, 0, 0, .013) 1.1%, 
+            rgba(0, 0, 0, .049) 2.3%, 
+            rgba(0, 0, 0, .104) 3.58%, 
+            rgba(0, 0, 0, .175) 4.94%, 
+            rgba(0, 0, 0, .259) 6.34%, 
+            rgba(0, 0, 0, .352) 7.78%, 
+            rgba(0, 0, 0, .45) 9.26%, 
+            rgba(0, 0, 0, .55) 10.74%, 
+            rgba(0, 0, 0, .648) 12.22%, 
+            rgba(0, 0, 0, .741) 13.66%, 
+            rgba(0, 0, 0, .825) 15.06%, 
+            rgba(0, 0, 0, .896) 16.42%, 
+            rgba(0, 0, 0, .951) 17.7%, 
+            rgba(0, 0, 0, .987) 18.9%, 
+            #000 20%, 
+            #000 80%, 
+            rgba(0, 0, 0, .987) 81.1%, 
+            rgba(0, 0, 0, .951) 82.3%, 
+            rgba(0, 0, 0, .896) 83.58%, 
+            rgba(0, 0, 0, .825) 84.94%, 
+            rgba(0, 0, 0, .741) 86.34%, 
+            rgba(0, 0, 0, .648) 87.78%, 
+            rgba(0, 0, 0, .55) 89.26%, 
+            rgba(0, 0, 0, .45) 90.74%, 
+            rgba(0, 0, 0, .352) 92.22%, 
+            rgba(0, 0, 0, .259) 93.66%, 
+            rgba(0, 0, 0, .175) 95.06%, 
+            rgba(0, 0, 0, .104) 96.42%, 
+            rgba(0, 0, 0, .049) 97.7%, 
+            rgba(0, 0, 0, .013) 98.9%, 
+            transparent)`,
+          maskImage: `linear-gradient(180deg, 
+            transparent, 
+            rgba(0, 0, 0, .013) 1.1%, 
+            rgba(0, 0, 0, .049) 2.3%, 
+            rgba(0, 0, 0, .104) 3.58%, 
+            rgba(0, 0, 0, .175) 4.94%, 
+            rgba(0, 0, 0, .259) 6.34%, 
+            rgba(0, 0, 0, .352) 7.78%, 
+            rgba(0, 0, 0, .45) 9.26%, 
+            rgba(0, 0, 0, .55) 10.74%, 
+            rgba(0, 0, 0, .648) 12.22%, 
+            rgba(0, 0, 0, .741) 13.66%, 
+            rgba(0, 0, 0, .825) 15.06%, 
+            rgba(0, 0, 0, .896) 16.42%, 
+            rgba(0, 0, 0, .951) 17.7%, 
+            rgba(0, 0, 0, .987) 18.9%, 
+            #000 20%, 
+            #000 80%, 
+            rgba(0, 0, 0, .987) 81.1%, 
+            rgba(0, 0, 0, .951) 82.3%, 
+            rgba(0, 0, 0, .896) 83.58%, 
+            rgba(0, 0, 0, .825) 84.94%, 
+            rgba(0, 0, 0, .741) 86.34%, 
+            rgba(0, 0, 0, .648) 87.78%, 
+            rgba(0, 0, 0, .55) 89.26%, 
+            rgba(0, 0, 0, .45) 90.74%, 
+            rgba(0, 0, 0, .352) 92.22%, 
+            rgba(0, 0, 0, .259) 93.66%, 
+            rgba(0, 0, 0, .175) 95.06%, 
+            rgba(0, 0, 0, .104) 96.42%, 
+            rgba(0, 0, 0, .049) 97.7%, 
+            rgba(0, 0, 0, .013) 98.9%, 
+            transparent)`,
+        }}
       >
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <Heart className="w-4 h-4" />
-          <span className="text-sm">성욱 ♥ 회진</span>
-          <Heart className="w-4 h-4" />
+        <div className="relative z-10 w-full max-w-md mx-auto px-6">
+          {/* 메인 텍스트 */}
+          <div className="mb-8 text-center">
+            <p className="text-white text-lg mb-6 font-light tracking-wide drop-shadow-lg">
+              감사합니다
+            </p>
+            <p className="text-base text-white font-light tracking-wide drop-shadow-lg">
+              2025.12.27
+            </p>
+          </div>
         </div>
-        <p className="text-xs opacity-70">2025.12.27</p>
+      </div>
+      <footer id="footer">
+        {/* 최하단 카카오톡 버튼과 저작권 */}
+        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 py-4 px-6">
+          <div className="max-w-md mx-auto text-center space-y-3">
+            {/* 카카오톡 공유 버튼 */}
+            <button
+              onClick={() => {
+                if (window.Kakao && window.Kakao.Share) {
+                  window.Kakao.Share.sendDefault({
+                    objectType: "feed",
+                    content: {
+                      title: "성욱 ♥ 회진 결혼식에 초대합니다",
+                      description:
+                        "2025년 12월 27일\n여러분의 축복 속에서 새로운 시작을 하려 합니다.",
+                      imageUrl:
+                        window.location.origin + "/images/KSC03250_s-1.jpg",
+                      link: {
+                        mobileWebUrl: window.location.href,
+                        webUrl: window.location.href,
+                      },
+                    },
+                    buttons: [
+                      {
+                        title: "청첩장 보기",
+                        link: {
+                          mobileWebUrl: window.location.href,
+                          webUrl: window.location.href,
+                        },
+                      },
+                    ],
+                  });
+                } else {
+                  // 카카오톡 공유 API가 없을 경우 URL 복사
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("링크가 복사되었습니다!");
+                }
+              }}
+              className="inline-flex items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-xs font-medium py-2 px-4 rounded-full transition-all duration-200 hover:scale-105"
+            >
+              <span className="text-sm">💬</span>
+              <span>카카오톡으로 초대장 보내기</span>
+            </button>
+
+            {/* 저작권 정보 */}
+            <p className="text-xs text-gray-500 opacity-70">
+              Copyright © 2025. Seongwook & Hoejin All rights reserved.
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

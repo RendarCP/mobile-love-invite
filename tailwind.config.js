@@ -18,11 +18,33 @@ export default {
         "text-secondary": "#666666",
       },
       fontFamily: {
-        // 한글 폰트 설정
-        sans: ["Noto Sans KR", "ui-sans-serif", "system-ui"],
-        serif: ["Noto Serif KR", "ui-serif", "serif"],
-        // PartialSans 폰트 추가
-        partial: ["PartialSans", "Noto Sans KR", "ui-sans-serif", "system-ui"],
+        // Pretendard를 기본 폰트로 설정
+        sans: [
+          "Pretendard Variable",
+          "Pretendard",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "system-ui",
+          "Roboto",
+          "Helvetica Neue",
+          "Segoe UI",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Malgun Gothic",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "sans-serif",
+        ],
+        serif: ["Pretendard Variable", "Pretendard", "ui-serif", "serif"],
+        // PartialSans 폰트는 특별한 용도로 유지
+        partial: [
+          "PartialSans",
+          "Pretendard Variable",
+          "Pretendard",
+          "ui-sans-serif",
+          "system-ui",
+        ],
       },
       maxWidth: {
         mobile: "480px",
@@ -31,6 +53,8 @@ export default {
         "fade-in": "fadeIn 0.3s ease-in-out",
         "scale-in": "scaleIn 0.3s ease-in-out",
         "slide-up": "slideUp 0.3s ease-in-out",
+        "accordion-down": "accordion-down 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        "accordion-up": "accordion-up 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
       },
       keyframes: {
         fadeIn: {
@@ -44,6 +68,30 @@ export default {
         slideUp: {
           "0%": { transform: "translateY(20px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        "accordion-down": {
+          from: {
+            height: "0",
+            opacity: "0",
+            transform: "translateY(-10px)",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+          to: {
+            height: "0",
+            opacity: "0",
+            transform: "translateY(-10px)",
+          },
         },
       },
     },
