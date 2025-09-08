@@ -21,6 +21,14 @@
       // 카카오톡 앱 초기화 (실제 앱 키로 변경해야 함)
       if (window.Kakao) {
         window.Kakao.init("YOUR_KAKAO_APP_KEY"); // 실제 카카오 앱 키로 변경 필요
+        console.log("카카오 SDK 초기화 완료:", window.Kakao.isInitialized());
+
+        // 카카오 내비 기능 확인
+        if (window.Kakao.Navi) {
+          console.log("카카오 내비 기능 사용 가능");
+        } else {
+          console.log("카카오 내비 기능 사용 불가");
+        }
       }
     </script>
   </head>

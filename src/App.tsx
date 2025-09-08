@@ -1,37 +1,46 @@
-import { Heart, Car, Train, Bus } from "lucide-react";
+import { useState } from "react";
+import { Heart, Car, Train, Bus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import MoneyGift from "@/components/sections/MoneyGift";
 import WeddingCalendar from "@/components/sections/WeddingCalendar";
 import PhotoGallery from "@/components/sections/PhotoGallery";
 import NaverMap from "@/components/sections/NaverMap";
 import PhotoUpload from "@/components/sections/PhotoUpload";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-// 카카오톡 SDK 타입 정의
-interface KakaoShareOptions {
-  objectType: string;
-  content: {
-    title: string;
-    description: string;
-    imageUrl: string;
-    link: {
-      mobileWebUrl: string;
-      webUrl: string;
-    };
-  };
-  buttons: Array<{
-    title: string;
-    link: {
-      mobileWebUrl: string;
-      webUrl: string;
-    };
-  }>;
-}
-
+// 카카오톡 SDK 확장 타입 정의
 declare global {
   interface Window {
     Kakao?: {
       Share?: {
-        sendDefault: (options: KakaoShareOptions) => void;
+        sendDefault: (options: {
+          objectType: string;
+          content: {
+            title: string;
+            description: string;
+            imageUrl: string;
+            link: {
+              mobileWebUrl: string;
+              webUrl: string;
+            };
+          };
+          buttons: Array<{
+            title: string;
+            link: {
+              mobileWebUrl: string;
+              webUrl: string;
+            };
+          }>;
+        }) => void;
+      };
+      Navi?: {
+        share: (options: {
+          name: string;
+          x: number;
+          y: number;
+          coordType: string;
+        }) => void;
       };
     };
   }
@@ -43,6 +52,7 @@ declare global {
  */
 function App() {
   const weddingDate = new Date("2025-12-27T15:20:00");
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   // 웨딩홀 정보 (실제 좌표로 변경해주세요)
   const venueInfo = {
@@ -52,6 +62,15 @@ function App() {
     latitude: 37.503862, // 워커힐 호텔 좌표 (예시)
     longitude: 127.0431764,
   };
+
+  // 각 섹션별 스크롤 애니메이션 훅
+  const greetingAnimation = useScrollAnimation({ delay: 0 });
+  const mainPhotoAnimation = useScrollAnimation({ delay: 150 });
+  const calendarAnimation = useScrollAnimation({ delay: 100 });
+  const galleryAnimation = useScrollAnimation({ delay: 200 });
+  const locationAnimation = useScrollAnimation({ delay: 100 });
+  const giftAnimation = useScrollAnimation({ delay: 150 });
+  const uploadAnimation = useScrollAnimation({ delay: 100 });
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-lg min-h-screen">
@@ -141,7 +160,13 @@ function App() {
       </section>
 
       {/* 인사말 섹션 */}
-      <section id="greeting" className="px-6 py-8 bg-white text-center">
+      <section
+        id="greeting"
+        ref={greetingAnimation.elementRef}
+        className={`px-6 py-8 bg-white text-center scroll-slide-up ${
+          greetingAnimation.isVisible ? "animate" : ""
+        }`}
+      >
         {/* 상단 장식 아이콘 */}
         <div className="mb-6">
           <div className="flex justify-center mb-4">
@@ -187,7 +212,12 @@ function App() {
       </section>
 
       {/* 메인 헤더 - 이미지 스타일 */}
-      <section className="relative bg-white">
+      <section
+        ref={mainPhotoAnimation.elementRef}
+        className={`relative bg-white scroll-slide-up-delay ${
+          mainPhotoAnimation.isVisible ? "animate" : ""
+        }`}
+      >
         {/* 상단 날짜 */}
         <div id="top-date" className="text-center pt-8 pb-4">
           <h1 className="text-2xl font-light text-text-primary tracking-wider mb-2">
@@ -223,17 +253,35 @@ function App() {
       </section>
 
       {/* 웨딩 캘린더 섹션 */}
-      <section id="wedding-calendar" className="px-6 py-8">
+      <section
+        id="wedding-calendar"
+        ref={calendarAnimation.elementRef}
+        className={`px-6 py-8 scroll-slide-up ${
+          calendarAnimation.isVisible ? "animate" : ""
+        }`}
+      >
         <WeddingCalendar weddingDate={weddingDate} />
       </section>
 
       {/* 갤러리 섹션 */}
-      <section id="gallery" className="px-6 py-8 bg-cream-primary/30">
+      <section
+        id="gallery"
+        ref={galleryAnimation.elementRef}
+        className={`px-6 py-8 bg-cream-primary/30 scroll-scale-up ${
+          galleryAnimation.isVisible ? "animate" : ""
+        }`}
+      >
         <PhotoGallery />
       </section>
 
       {/* 장소 정보 섹션 */}
-      <section id="location-info" className="px-6 py-8 bg-white">
+      <section
+        id="location-info"
+        ref={locationAnimation.elementRef}
+        className={`px-6 py-8 bg-white scroll-slide-up ${
+          locationAnimation.isVisible ? "animate" : ""
+        }`}
+      >
         <h2 className="text-xl font-medium text-text-primary text-center mb-6">
           오시는 길
         </h2>
@@ -271,7 +319,7 @@ function App() {
         {/* 교통편 안내 */}
         <div id="transport-info" className="space-y-4">
           <div className="flex items-start">
-            <Train className="w-5 h-5 text-sage-primary mt-1 mr-4" />
+            <Train className="w-5 h-5 text-rose-primary mt-1 mr-4" />
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">지하철</h4>
               <p className="text-text-secondary text-sm">
@@ -283,7 +331,7 @@ function App() {
           </div>
 
           <div className="flex items-start">
-            <Bus className="w-5 h-5 text-sage-primary mt-1 mr-4" />
+            <Bus className="w-5 h-5 text-rose-primary mt-1 mr-4" />
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">버스</h4>
               <p className="text-text-secondary text-sm">
@@ -296,7 +344,7 @@ function App() {
           </div>
 
           <div className="flex items-start">
-            <Car className="w-5 h-5 text-sage-primary mt-1 mr-4" />
+            <Car className="w-5 h-5 text-rose-primary mt-1 mr-4" />
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">자동차</h4>
               <p className="text-text-secondary text-sm">
@@ -308,14 +356,18 @@ function App() {
         </div>
 
         <div id="map-button" className="mt-6 text-center">
-          <Button className="bg-sage-primary hover:bg-sage-secondary text-white">
-            지도 보기
-          </Button>
+          <Button onClick={() => setIsMapModalOpen(true)}>지도 보기</Button>
         </div>
       </section>
 
       {/* 마음 전하는 곳 */}
-      <section id="gift-info" className="px-6 py-8 bg-white">
+      <section
+        id="gift-info"
+        ref={giftAnimation.elementRef}
+        className={`px-6 py-8 bg-white scroll-slide-up-delay ${
+          giftAnimation.isVisible ? "animate" : ""
+        }`}
+      >
         <h2 className="text-xl font-medium text-text-primary text-center mb-6">
           마음 전하는 곳
         </h2>
@@ -330,7 +382,14 @@ function App() {
       </section>
 
       {/* 스냅사진 업로드 섹션 */}
-      <PhotoUpload />
+      <div
+        ref={uploadAnimation.elementRef}
+        className={`scroll-fade-in ${
+          uploadAnimation.isVisible ? "animate" : ""
+        }`}
+      >
+        <PhotoUpload />
+      </div>
 
       {/* 감사 인사 */}
       <div
@@ -467,6 +526,47 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* 지도 보기 팝업 모달 */}
+      <Dialog open={isMapModalOpen} onOpenChange={setIsMapModalOpen}>
+        <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-hidden p-0 bg-white">
+          {/* 헤더 */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <h3 className="text-lg font-medium text-text-primary">오시는 길</h3>
+            <button
+              onClick={() => setIsMapModalOpen(false)}
+              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+
+          {/* 지도 이미지 */}
+          <div className="p-4">
+            <div className="w-full">
+              <img
+                src="/images/location.jpg"
+                alt="상록아트홀 위치 안내"
+                className="w-full h-auto rounded-lg shadow-sm"
+                style={{ maxHeight: "70vh", objectFit: "contain" }}
+              />
+            </div>
+
+            {/* 웨딩홀 정보 */}
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-text-primary text-sm mb-2">
+                📍 {venueInfo.name}
+              </h4>
+              <p className="text-text-secondary text-xs leading-relaxed mb-2">
+                {venueInfo.address}
+              </p>
+              <p className="text-text-secondary text-xs">
+                📞 {venueInfo.phone}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,9 +1,20 @@
+import { WineOff } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 
-// 네이버 맵 타입 정의
+// 네이버 맵 및 카카오 내비 타입 정의
 declare global {
   interface Window {
     naver: any;
+    Kakao?: {
+      Navi?: {
+        share: (options: {
+          name: string;
+          x: number;
+          y: number;
+          coordType: string;
+        }) => void;
+      };
+    };
   }
 }
 
@@ -29,6 +40,44 @@ const NaverMap: React.FC<NaverMapProps> = ({
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+
+  // 카카오맵 내비 공유 함수
+  const handleKakaoNavi = () => {
+    // const openAlert = (msg: string) => {
+    //   alert(msg);
+    // };
+    window.open("https://kko.kakao.com/OXftsQIo4C", "_blank");
+
+    // if (window.Kakao && window.Kakao.Navi) {
+    //   try {
+    //     window.Kakao.Navi.share({
+    //       name: venueName,
+    //       x: longitude,
+    //       y: latitude,
+    //       coordType: "wgs84",
+    //     });
+    //   } catch (error) {
+    //     console.error("카카오 내비 공유 실패:", error);
+    //     openAlert("카카오 내비 앱이 설치되어 있지 않습니다.");
+    //     // 대체 방법으로 카카오맵 웹 페이지 열기
+    //     window.open(
+    //       `https://map.kakao.com/link/to/${encodeURIComponent(
+    //         venueName
+    //       )},${latitude},${longitude}`,
+    //       "_blank"
+    //     );
+    //   }
+    // } else {
+    //   openAlert("카카오 SDK가 로드되지 않았습니다.");
+    //   // 대체 방법으로 카카오맵 웹 페이지 열기
+    //   window.open(
+    //     `https://map.kakao.com/link/to/${encodeURIComponent(
+    //       venueName
+    //     )},${latitude},${longitude}`,
+    //     "_blank"
+    //   );
+    // }
+  };
 
   useEffect(() => {
     // 네이버 맵 API가 로드될 때까지 대기
@@ -213,9 +262,7 @@ const NaverMap: React.FC<NaverMapProps> = ({
             네이버지도
           </button>
           <button
-            onClick={() =>
-              window.open(`https://kko.kakao.com/OXftsQIo4C`, "_blank")
-            }
+            onClick={handleKakaoNavi}
             className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
           >
             카카오맵

@@ -93,8 +93,8 @@ export default function MoneyGift() {
       <div className="flex items-center justify-between">
         <span className="text-gray-600 text-sm">{account.name}</span>
         {account.kakaopay && (
-          <div className="bg-yellow-400 text-black text-xs px-2 py-1 rounded font-bold animate-pulse">
-            🏷 pay
+          <div className="bg-rose-primary text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
+            💳 pay
           </div>
         )}
       </div>
@@ -113,10 +113,10 @@ export default function MoneyGift() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem
                 value="groom"
-                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-blue-300"
+                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-rose-primary/50"
               >
-                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-blue-50 group">
-                  <span className="group-hover:text-blue-700 transition-colors duration-200">
+                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-rose-primary/10 group">
+                  <span className="group-hover:text-rose-primary transition-colors duration-200">
                     신랑측 계좌번호
                   </span>
                 </AccordionTrigger>
@@ -139,10 +139,10 @@ export default function MoneyGift() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem
                 value="bride"
-                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-pink-300"
+                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-rose-primary/50"
               >
-                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-pink-50 group">
-                  <span className="group-hover:text-pink-700 transition-colors duration-200">
+                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-rose-primary/10 group">
+                  <span className="group-hover:text-rose-primary transition-colors duration-200">
                     신부측 계좌번호
                   </span>
                 </AccordionTrigger>

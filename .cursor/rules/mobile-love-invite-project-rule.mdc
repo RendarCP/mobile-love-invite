@@ -37,8 +37,8 @@ alwaysApply: true
 
 - **분위기**: 따뜻하고 축하받는 느낌, 로맨틱하면서 신나는 분위기
 - **컬러 팔레트**:
-  - Primary: 로즈골드/핑크 계열 (#F8BBD9, #E879F9)
-  - Secondary: 크림/베이지 계열 (#FEF7ED, #F3E8FF)
+  - Primary: 크림/베이지 계열 (#FEF7ED, #F3E8FF)
+  - Secondary: 로즈골드/핑크 계열 (#F8BBD9, #E879F9)
   - Accent: 골드 계열 (#FCD34D, #FBBF24)
 - **폰트**: 한글 가독성 좋은 폰트, 제목은 더 우아한 느낌
 - **여백**: 충분한 패딩으로 편안한 느낌

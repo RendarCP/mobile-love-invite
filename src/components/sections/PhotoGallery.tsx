@@ -294,9 +294,8 @@ export default function PhotoGallery() {
       {!showAll && photos.length > 6 && (
         <div className="text-center">
           <Button
-            variant="outline"
             onClick={() => setShowAll(true)}
-            className="rounded-full px-8 py-2 border-gray-300 text-text-secondary hover:bg-gray-50"
+            className="rounded-full px-8 py-2 bg-rose-primary hover:bg-rose-secondary text-white"
           >
             사진 더 보기
           </Button>
@@ -309,7 +308,7 @@ export default function PhotoGallery() {
           <DialogContent className="max-w-full w-full h-full max-h-screen p-0 bg-black border-none">
             <div className="relative w-full h-full flex items-center justify-center z-100">
               {/* 사진 갯수 표시 (왼쪽 위) */}
-              <div className="absolute top-6 left-6 z-50 text-white/80 text-sm font-light bg-gray-300 rounded-full px-2 py-1">
+              <div className="absolute top-6 left-6 z-50 text-white/80 text-sm font-light bg-rose-primary rounded-full px-2 py-1">
                 {currentIndex + 1} / {photos.length}
               </div>
 

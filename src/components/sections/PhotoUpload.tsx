@@ -189,8 +189,7 @@ export default function PhotoUpload() {
 
                         <Button
                           onClick={handleFileSelectClick}
-                          variant="outline"
-                          className="border-rose-primary/30 text-rose-primary hover:bg-rose-primary/10"
+                          className="bg-rose-primary hover:bg-rose-secondary text-white"
                         >
                           <Image className="w-4 h-4 mr-2" />
                           사진 선택하기
@@ -252,8 +251,7 @@ export default function PhotoUpload() {
                 <div className="flex space-x-3 pt-4">
                   <Button
                     onClick={closeModal}
-                    variant="outline"
-                    className="flex-1"
+                    className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
                     disabled={isUploading}
                   >
                     취소

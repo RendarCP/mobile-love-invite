@@ -72,7 +72,7 @@ export default function GuestBook() {
       {/* 메시지 작성 버튼 */}
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" className="w-full">
+          <Button className="w-full bg-rose-primary hover:bg-rose-secondary text-white">
             <MessageCircle className="w-4 h-4 mr-2" />
             축하 메시지 남기기
           </Button>
