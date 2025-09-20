@@ -161,8 +161,10 @@ export default function PhotoGallery() {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
   }, [selectedPhoto, goToPrevious, goToNext, closeModal]);
 
   return (

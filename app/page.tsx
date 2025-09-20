@@ -70,10 +70,12 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-    });
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+      });
+    }
   }, []);
 
   // 각 섹션별 스크롤 애니메이션 훅
@@ -88,6 +90,9 @@ export default function HomePage() {
 
   // API 초기화 및 뷰포트 최적화
   useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    if (typeof window === "undefined") return;
+
     // 카카오 SDK 초기화
     const initKakaoSDK = () => {
       const kakaoAppKey = process.env.NEXT_PUBLIC_KAKAO_APP_KEY;

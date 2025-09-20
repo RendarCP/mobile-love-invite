@@ -4,6 +4,9 @@ import Script from "next/script";
 // import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+  ),
   title: "성욱 ♥ 회진 결혼식에 초대합니다",
   description:
     "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
