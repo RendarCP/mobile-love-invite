@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Heart, Car, Train, Bus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,7 +56,7 @@ declare global {
  * 모바일 청첩장 메인 앱 컴포넌트
  * 참고: https://mcard.fromtoday.co.kr/w/Hr9Hp3/
  */
-function App() {
+export default function HomePage() {
   const weddingDate = new Date("2025-12-27T15:20:00");
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
@@ -88,7 +90,7 @@ function App() {
   useEffect(() => {
     // 카카오 SDK 초기화
     const initKakaoSDK = () => {
-      const kakaoAppKey = import.meta.env.VITE_KAKAO_APP_KEY;
+      const kakaoAppKey = process.env.NEXT_PUBLIC_KAKAO_APP_KEY;
 
       if (window.Kakao && kakaoAppKey) {
         if (!window.Kakao.isInitialized()) {
@@ -104,14 +106,17 @@ function App() {
         }
       } else if (!kakaoAppKey) {
         console.warn(
-          "카카오 앱 키가 설정되지 않았습니다. .env 파일에 VITE_KAKAO_APP_KEY를 설정해주세요."
+          "카카오 앱 키가 설정되지 않았습니다. .env.local 파일에 NEXT_PUBLIC_KAKAO_APP_KEY를 설정해주세요."
         );
+      } else {
+        console.log("카카오 SDK 스크립트가 로드되지 않음. 재시도...");
+        setTimeout(initKakaoSDK, 1000);
       }
     };
 
     // 네이버 맵 API 동적 로딩
     const loadNaverMapAPI = () => {
-      const naverMapKey = import.meta.env.VITE_NAVER_MAP_KEY;
+      const naverMapKey = process.env.NEXT_PUBLIC_NAVER_MAP_KEY;
 
       if (naverMapKey && !window.naver) {
         const script = document.createElement("script");
@@ -129,63 +134,21 @@ function App() {
         };
       } else if (!naverMapKey) {
         console.warn(
-          "네이버 맵 키가 설정되지 않았습니다. .env 파일에 VITE_NAVER_MAP_KEY를 설정해주세요."
+          "네이버 맵 키가 설정되지 않았습니다. .env.local 파일에 NEXT_PUBLIC_NAVER_MAP_KEY를 설정해주세요."
         );
       }
     };
 
-    // // 모바일 브라우저 viewport 변화 감지 및 최적화
-    // const handleViewportChange = () => {
-    //   // 실제 뷰포트 높이를 CSS 커스텀 속성으로 저장
-    //   const vh = window.innerHeight * 0.01;
-    //   document.documentElement.style.setProperty("--vh", `${vh}px`);
-
-    //   // 이미지 리사이징 방지를 위한 최적화
-    //   const coverSections = document.querySelectorAll(".mobile-viewport-fix");
-    //   coverSections.forEach((section) => {
-    //     const element = section as HTMLElement;
-    //     element.style.height = `${window.innerHeight}px`;
-    //   });
-
-    //   // 이미지에 안정화 스타일 적용
-    //   const images = document.querySelectorAll(".image-fix");
-    //   images.forEach((img) => {
-    //     const element = img as HTMLElement;
-    //     element.style.willChange = "auto";
-    //   });
-    // };
-
     // 초기화 실행
     initKakaoSDK();
     loadNaverMapAPI();
-    // handleViewportChange();
-
-    // // 리사이즈 이벤트 리스너 (디바운스 적용)
-    // let timeoutId: NodeJS.Timeout;
-    // const debouncedHandleResize = () => {
-    //   clearTimeout(timeoutId);
-    //   timeoutId = setTimeout(handleViewportChange, 50);
-    // };
-
-    // // 다양한 모바일 브라우저 이벤트 리스너 추가
-    // window.addEventListener("resize", debouncedHandleResize);
-    // window.addEventListener("orientationchange", handleViewportChange);
-    // // 비주얼 뷰포트 변화 감지 (모바일 브라우저 주소창 데대)
-    // window.addEventListener(
-    //   "visualViewport" in window ? "scroll" : "resize",
-    //   debouncedHandleResize,
-    //   { passive: true }
-    // );
-
-    // return () => {
-    //   window.removeEventListener("resize", debouncedHandleResize);
-    //   window.removeEventListener("orientationchange", handleViewportChange);
-    //   clearTimeout(timeoutId);
-    // };
   }, []);
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-lg min-h-screen-mobile">
+    <div
+      className="max-w-md mx-auto bg-white shadow-lg min-h-screen-mobile"
+      suppressHydrationWarning
+    >
       {/* 최상단 커버 섹션 - 이미지 스타일 */}
       <section
         className="relative overflow-hidden"
@@ -209,12 +172,8 @@ function App() {
               transform: "translateZ(0)",
               willChange: "auto",
               backfaceVisibility: "hidden",
-              // maskImage: `linear-gradient(0deg, transparent, rgba(0, 0, 0, .013) 1.1%, rgba(0, 0, 0, .049) 2.3%, rgba(0, 0, 0, .104) 3.58%, rgba(0, 0, 0, .175) 4.94%, rgba(0, 0, 0, .259) 6.34%, rgba(0, 0, 0, .352) 7.78%, rgba(0, 0, 0, .45) 9.26%, rgba(0, 0, 0, .55) 10.74%, rgba(0, 0, 0, .648) 12.22%, rgba(0, 0, 0, .741) 13.66%, rgba(0, 0, 0, .825) 15.06%, rgba(0, 0, 0, .896) 16.42%, rgba(0, 0, 0, .951) 17.7%, rgba(0, 0, 0, .987) 18.9%, #000 20%)`,
-              // WebkitMaskImage: `linear-gradient(180deg, transparent, rgba(0, 0, 0, .013) 1.1%, rgba(0, 0, 0, .049) 2.3%, rgba(0, 0, 0, .104) 3.58%, rgba(0, 0, 0, .175) 4.94%, rgba(0, 0, 0, .259) 6.34%, rgba(0, 0, 0, .352) 7.78%, rgba(0, 0, 0, .45) 9.26%, rgba(0, 0, 0, .55) 10.74%, rgba(0, 0, 0, .648) 12.22%, rgba(0, 0, 0, .741) 13.66%, rgba(0, 0, 0, .825) 15.06%, rgba(0, 0, 0, .896) 16.42%, rgba(0, 0, 0, .951) 17.7%, rgba(0, 0, 0, .987) 18.9%, #000 20%, #000 80%, rgba(0, 0, 0, .987) 81.1%, rgba(0, 0, 0, .951) 82.3%, rgba(0, 0, 0, .896) 83.58%, rgba(0, 0, 0, .825) 84.94%, rgba(0, 0, 0, .741) 86.34%, rgba(0, 0, 0, .648) 87.78%, rgba(0, 0, 0, .55) 89.26%, rgba(0, 0, 0, .45) 90.74%, rgba(0, 0, 0, .352) 92.22%, rgba(0, 0, 0, .259) 93.66%, rgba(0, 0, 0, .175) 95.06%, rgba(0, 0, 0, .104) 96.42%, rgba(0, 0, 0, .049) 97.7%, rgba(0, 0, 0, .013) 98.9%, transparent)`,
-              // maskImage: `linear-gradient(180deg, transparent, rgba(0, 0, 0, .013) 1.1%, rgba(0, 0, 0, .049) 2.3%, rgba(0, 0, 0, .104) 3.58%, rgba(0, 0, 0, .175) 4.94%, rgba(0, 0, 0, .259) 6.34%, rgba(0, 0, 0, .352) 7.78%, rgba(0, 0, 0, .45) 9.26%, rgba(0, 0, 0, .55) 10.74%, rgba(0, 0, 0, .648) 12.22%, rgba(0, 0, 0, .741) 13.66%, rgba(0, 0, 0, .825) 15.06%, rgba(0, 0, 0, .896) 16.42%, rgba(0, 0, 0, .951) 17.7%, rgba(0, 0, 0, .987) 18.9%, #000 20%, #000 80%, rgba(0, 0, 0, .987) 81.1%, rgba(0, 0, 0, .951) 82.3%, rgba(0, 0, 0, .896) 83.58%, rgba(0, 0, 0, .825) 84.94%, rgba(0, 0, 0, .741) 86.34%, rgba(0, 0, 0, .648) 87.78%, rgba(0, 0, 0, .55) 89.26%, rgba(0, 0, 0, .45) 90.74%, rgba(0, 0, 0, .352) 92.22%, rgba(0, 0, 0, .259) 93.66%, rgba(0, 0, 0, .175) 95.06%, rgba(0, 0, 0, .104) 96.42%, rgba(0, 0, 0, .049) 97.7%, rgba(0, 0, 0, .013) 98.9%, transparent)`,
             }}
           />
-          {/* <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/30"></div> */}
         </div>
 
         {/* 비디오 오버레이 - screen blend mode */}
@@ -396,26 +355,6 @@ function App() {
             venueAddress={venueInfo.address}
           />
         </div>
-
-        {/* 웨딩홀 정보 */}
-        {/* <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="flex items-start space-x-3">
-              <MapPin className="w-5 h-5 text-rose-primary mt-1 flex-shrink-0" />
-              <div>
-                <h3 className="font-medium text-text-primary mb-1">
-                  {venueInfo.name}
-                </h3>
-                <p className="text-text-secondary text-sm mb-2">
-                  {venueInfo.address}
-                </p>
-                <p className="text-text-secondary text-sm">
-                  Tel. {venueInfo.phone}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card> */}
 
         {/* 교통편 안내 */}
         <div id="transport-info" className="space-y-4">
@@ -642,11 +581,6 @@ function App() {
               </span>
               <span>카카오톡으로 초대장 보내기</span>
             </button>
-
-            {/* 저작권 정보 */}
-            {/* <p className="text-xs text-gray-500 opacity-70">
-              Copyright © 2025. Seongwook & Hoejin All rights reserved.
-            </p> */}
           </div>
         </div>
       </footer>
@@ -694,5 +628,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

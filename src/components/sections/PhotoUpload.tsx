@@ -14,6 +14,8 @@ interface PreviewPhoto {
   id: string;
   file: File;
   preview: string;
+  isUploading?: boolean;
+  uploadProgress?: number;
 }
 
 interface UploadedPhoto {
@@ -47,7 +49,7 @@ export default function PhotoUpload() {
       }
 
       // 파일 크기 제한 (5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 10 * 1024 * 1024) {
         alert("파일 크기는 5MB 이하로 제한됩니다.");
         return;
       }
@@ -80,15 +82,70 @@ export default function PhotoUpload() {
 
     setIsUploading(true);
 
-    try {
-      // 실제 업로드 로직 (현재는 시뮬레이션)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // 미리보기 사진들을 업로드된 사진으로 이동
-      const newUploadedPhotos: UploadedPhoto[] = previewPhotos.map((photo) => ({
+    // 모든 사진을 업로드 중 상태로 설정
+    setPreviewPhotos((prev) =>
+      prev.map((photo) => ({
         ...photo,
-        uploadedAt: new Date(),
-      }));
+        isUploading: true,
+        uploadProgress: 0,
+      }))
+    );
+
+    try {
+      // 개별 사진 업로드 처리
+      const uploadPromises = previewPhotos.map(async (photo, index) => {
+        // 업로드 시작 시뮬레이션
+        setPreviewPhotos((prev) =>
+          prev.map((p) =>
+            p.id === photo.id ? { ...p, uploadProgress: 10 } : p
+          )
+        );
+
+        const formData = new FormData();
+        formData.append("name", "게스트"); // 기본값, 필요시 입력 필드 추가
+        formData.append("message", "결혼식 축하사진"); // 기본값, 필요시 입력 필드 추가
+        formData.append("photo", photo.file);
+
+        // 진행률 시뮬레이션
+        setPreviewPhotos((prev) =>
+          prev.map((p) =>
+            p.id === photo.id ? { ...p, uploadProgress: 30 } : p
+          )
+        );
+
+        const response = await fetch("/api/photo-upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        setPreviewPhotos((prev) =>
+          prev.map((p) =>
+            p.id === photo.id ? { ...p, uploadProgress: 70 } : p
+          )
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "업로드 실패");
+        }
+
+        setPreviewPhotos((prev) =>
+          prev.map((p) =>
+            p.id === photo.id ? { ...p, uploadProgress: 100 } : p
+          )
+        );
+
+        return {
+          ...photo,
+          uploadedAt: new Date(),
+        };
+      });
+
+      const newUploadedPhotos = await Promise.all(uploadPromises);
+
+      // 업로드 완료 후 잠시 대기
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       setUploadedPhotos((prev) => [...prev, ...newUploadedPhotos]);
       setPreviewPhotos([]);
@@ -96,6 +153,14 @@ export default function PhotoUpload() {
 
       alert(`${newUploadedPhotos.length}장의 사진이 업로드되었습니다!`);
     } catch (error) {
+      // 오류 발생 시 업로드 상태 초기화
+      setPreviewPhotos((prev) =>
+        prev.map((photo) => ({
+          ...photo,
+          isUploading: false,
+          uploadProgress: 0,
+        }))
+      );
       alert("업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
       console.error("Upload error:", error);
     } finally {
@@ -105,7 +170,9 @@ export default function PhotoUpload() {
 
   // 업로드된 사진 삭제
   const removeUploadedPhoto = (id: string) => {
-    setUploadedPhotos((prev) => prev.filter((photo) => photo.id !== id));
+    if (confirm("이 사진을 삭제하시겠습니까?")) {
+      setUploadedPhotos((prev) => prev.filter((photo) => photo.id !== id));
+    }
   };
 
   // 미리보기 사진 삭제
@@ -197,7 +264,7 @@ export default function PhotoUpload() {
                       </div>
 
                       <p className="text-xs text-text-secondary">
-                        JPG, PNG 파일 (최대 5MB)
+                        JPG, PNG 파일 (최대 10MB)
                         <br />
                         여러 장 동시 선택 가능
                       </p>
@@ -230,16 +297,38 @@ export default function PhotoUpload() {
                             <img
                               src={photo.preview}
                               alt={`선택된 사진 ${index + 1}`}
-                              className="w-full h-full object-cover"
+                              className={`w-full h-full object-cover transition-all duration-300 ${
+                                photo.isUploading ? "opacity-50" : ""
+                              }`}
                             />
 
-                            {/* 삭제 버튼 */}
-                            <button
-                              onClick={() => removePreviewPhoto(photo.id)}
-                              className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-80 hover:opacity-100 transition-all duration-200 hover:scale-110"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
+                            {/* 업로드 진행률 오버레이 */}
+                            {photo.isUploading && (
+                              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+                                <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin mb-2"></div>
+                                <div className="text-white text-xs font-medium">
+                                  {photo.uploadProgress}%
+                                </div>
+                                <div className="w-16 h-1 bg-white/30 rounded-full mt-2 overflow-hidden">
+                                  <div
+                                    className="h-full bg-white rounded-full transition-all duration-300 ease-out"
+                                    style={{
+                                      width: `${photo.uploadProgress}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 삭제 버튼 (업로드 중이 아닐 때만 표시) */}
+                            {!photo.isUploading && (
+                              <button
+                                onClick={() => removePreviewPhoto(photo.id)}
+                                className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-80 hover:opacity-100 transition-all duration-200 hover:scale-110"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -259,12 +348,29 @@ export default function PhotoUpload() {
                   <Button
                     onClick={handleUpload}
                     disabled={previewPhotos.length === 0 || isUploading}
-                    className="flex-1 bg-rose-primary hover:bg-rose-primary/90 text-white"
+                    className="flex-1 bg-rose-primary hover:bg-rose-primary/90 text-white relative overflow-hidden"
                   >
                     {isUploading ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                         업로드 중...
+                        {/* 전체 진행률 표시 */}
+                        <div className="absolute bottom-0 left-0 h-1 bg-white/30 w-full">
+                          <div
+                            className="h-full bg-white/60 transition-all duration-500 ease-out"
+                            style={{
+                              width: `${
+                                previewPhotos.length > 0
+                                  ? previewPhotos.reduce(
+                                      (acc, photo) =>
+                                        acc + (photo.uploadProgress || 0),
+                                      0
+                                    ) / previewPhotos.length
+                                  : 0
+                              }%`,
+                            }}
+                          ></div>
+                        </div>
                       </>
                     ) : (
                       <>
@@ -278,55 +384,6 @@ export default function PhotoUpload() {
             </DialogContent>
           </Dialog>
         </div>
-
-        {/* 업로드된 사진 갤러리 */}
-        {uploadedPhotos.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Heart className="w-4 h-4 text-rose-primary" />
-              <span className="text-sm text-text-secondary">
-                업로드된 사진 {uploadedPhotos.length}장
-              </span>
-              <Heart className="w-4 h-4 text-rose-primary" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {uploadedPhotos.map((photo, index) => (
-                <div
-                  key={photo.id}
-                  className="relative group animate-fade-in"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animationFillMode: "both",
-                  }}
-                >
-                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-                    <img
-                      src={photo.preview}
-                      alt={`업로드된 사진 ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-
-                    {/* 삭제 버튼 */}
-                    <button
-                      onClick={() => removeUploadedPhoto(photo.id)}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-600 hover:scale-110"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-
-                    {/* 호버 오버레이 */}
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center">
-                      <span className="text-white text-xs bg-black/50 px-2 py-1 rounded">
-                        클릭하여 삭제
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* 안내 메시지 */}
         <div className="mt-6 text-center">
