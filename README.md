@@ -31,7 +31,37 @@
 
 ## 🚀 시작하기
 
-### 설치
+### 1. 환경변수 설정
+
+프로젝트 루트에 `.env` 파일을 생성하고 다음 환경변수를 설정하세요:
+
+\`\`\`bash
+
+# .env 파일
+
+VITE_KAKAO_APP_KEY=your_kakao_javascript_key_here
+VITE_NAVER_MAP_KEY=your_naver_cloud_map_key_here
+\`\`\`
+
+> 💡 **환경변수는 App.tsx에서 자동으로 로드됩니다!**
+>
+> - 카카오 SDK는 앱 시작 시 자동 초기화
+> - 네이버 맵 API는 동적으로 로드
+
+#### 카카오 앱 키 발급 방법:
+
+1. [카카오 디벨로퍼스](https://developers.kakao.com/) 접속
+2. 내 애플리케이션 → 애플리케이션 추가하기
+3. 앱 설정 → 플랫폼 → Web 플랫폼 추가
+4. 앱 키 → JavaScript 키 복사
+
+#### 네이버 맵 API 키 발급 방법:
+
+1. [네이버 클라우드 플랫폼](https://www.ncloud.com/) 접속
+2. AI·NAVER API → AI·NAVER API → Maps 선택
+3. Application 등록 후 인증 정보의 Client ID 사용
+
+### 2. 설치 및 실행
 
 \`\`\`bash
 
@@ -51,6 +81,15 @@ yarn build
 
 yarn preview
 \`\`\`
+
+### 3. Netlify 배포 설정
+
+Netlify에서 환경변수를 설정하려면:
+
+1. Netlify 대시보드 → Site settings → Environment variables
+2. 다음 변수들을 추가:
+   - `VITE_KAKAO_APP_KEY`: 카카오 JavaScript 키
+   - `VITE_NAVER_MAP_KEY`: 네이버 맵 Client ID
 
 ### 개발 환경
 
@@ -110,4 +149,5 @@ src/
 ---
 
 💕 성욱 & 회진의 특별한 날을 축하해 주세요!
+
 # mobile-love-invite

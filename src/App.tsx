@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Car, Train, Bus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -7,12 +7,16 @@ import WeddingCalendar from "@/components/sections/WeddingCalendar";
 import PhotoGallery from "@/components/sections/PhotoGallery";
 import NaverMap from "@/components/sections/NaverMap";
 import PhotoUpload from "@/components/sections/PhotoUpload";
+import AttendanceCheck from "@/components/sections/AttendanceCheck";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-// 카카오톡 SDK 확장 타입 정의
+// 카카오톡 SDK 및 네이버 맵 확장 타입 정의
 declare global {
   interface Window {
+    naver: unknown;
     Kakao?: {
+      init: (key: string) => void;
+      isInitialized: () => boolean;
       Share?: {
         sendDefault: (options: {
           objectType: string;
@@ -63,31 +67,158 @@ function App() {
     longitude: 127.0431764,
   };
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+    });
+  }, []);
+
   // 각 섹션별 스크롤 애니메이션 훅
   const greetingAnimation = useScrollAnimation({ delay: 0 });
   const mainPhotoAnimation = useScrollAnimation({ delay: 150 });
   const calendarAnimation = useScrollAnimation({ delay: 100 });
   const galleryAnimation = useScrollAnimation({ delay: 200 });
   const locationAnimation = useScrollAnimation({ delay: 100 });
+  const attendanceAnimation = useScrollAnimation({ delay: 100 });
   const giftAnimation = useScrollAnimation({ delay: 150 });
   const uploadAnimation = useScrollAnimation({ delay: 100 });
 
+  // API 초기화 및 뷰포트 최적화
+  useEffect(() => {
+    // 카카오 SDK 초기화
+    const initKakaoSDK = () => {
+      const kakaoAppKey = import.meta.env.VITE_KAKAO_APP_KEY;
+
+      if (window.Kakao && kakaoAppKey) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(kakaoAppKey);
+          console.log("카카오 SDK 초기화 완료:", window.Kakao.isInitialized());
+        }
+
+        // 카카오 내비 기능 확인
+        if (window.Kakao.Navi) {
+          console.log("카카오 내비 기능 사용 가능");
+        } else {
+          console.log("카카오 내비 기능 사용 불가");
+        }
+      } else if (!kakaoAppKey) {
+        console.warn(
+          "카카오 앱 키가 설정되지 않았습니다. .env 파일에 VITE_KAKAO_APP_KEY를 설정해주세요."
+        );
+      }
+    };
+
+    // 네이버 맵 API 동적 로딩
+    const loadNaverMapAPI = () => {
+      const naverMapKey = import.meta.env.VITE_NAVER_MAP_KEY;
+
+      if (naverMapKey && !window.naver) {
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${naverMapKey}`;
+        script.async = true;
+        document.head.appendChild(script);
+
+        script.onload = () => {
+          console.log("네이버 맵 API 로드 완료");
+        };
+
+        script.onerror = () => {
+          console.error("네이버 맵 API 로드 실패");
+        };
+      } else if (!naverMapKey) {
+        console.warn(
+          "네이버 맵 키가 설정되지 않았습니다. .env 파일에 VITE_NAVER_MAP_KEY를 설정해주세요."
+        );
+      }
+    };
+
+    // // 모바일 브라우저 viewport 변화 감지 및 최적화
+    // const handleViewportChange = () => {
+    //   // 실제 뷰포트 높이를 CSS 커스텀 속성으로 저장
+    //   const vh = window.innerHeight * 0.01;
+    //   document.documentElement.style.setProperty("--vh", `${vh}px`);
+
+    //   // 이미지 리사이징 방지를 위한 최적화
+    //   const coverSections = document.querySelectorAll(".mobile-viewport-fix");
+    //   coverSections.forEach((section) => {
+    //     const element = section as HTMLElement;
+    //     element.style.height = `${window.innerHeight}px`;
+    //   });
+
+    //   // 이미지에 안정화 스타일 적용
+    //   const images = document.querySelectorAll(".image-fix");
+    //   images.forEach((img) => {
+    //     const element = img as HTMLElement;
+    //     element.style.willChange = "auto";
+    //   });
+    // };
+
+    // 초기화 실행
+    initKakaoSDK();
+    loadNaverMapAPI();
+    // handleViewportChange();
+
+    // // 리사이즈 이벤트 리스너 (디바운스 적용)
+    // let timeoutId: NodeJS.Timeout;
+    // const debouncedHandleResize = () => {
+    //   clearTimeout(timeoutId);
+    //   timeoutId = setTimeout(handleViewportChange, 50);
+    // };
+
+    // // 다양한 모바일 브라우저 이벤트 리스너 추가
+    // window.addEventListener("resize", debouncedHandleResize);
+    // window.addEventListener("orientationchange", handleViewportChange);
+    // // 비주얼 뷰포트 변화 감지 (모바일 브라우저 주소창 데대)
+    // window.addEventListener(
+    //   "visualViewport" in window ? "scroll" : "resize",
+    //   debouncedHandleResize,
+    //   { passive: true }
+    // );
+
+    // return () => {
+    //   window.removeEventListener("resize", debouncedHandleResize);
+    //   window.removeEventListener("orientationchange", handleViewportChange);
+    //   clearTimeout(timeoutId);
+    // };
+  }, []);
+
   return (
-    <div className="max-w-md mx-auto bg-white shadow-lg min-h-screen">
+    <div className="max-w-md mx-auto bg-white shadow-lg min-h-screen-mobile">
       {/* 최상단 커버 섹션 - 이미지 스타일 */}
-      <section className="relative h-screen bg-gradient-to-br from-rose-200 via-rose-100 to-orange-100 overflow-hidden">
+      <section
+        className="relative overflow-hidden"
+        style={{ minHeight: "600px", maxHeight: "100dvh" }}
+      >
         {/* 배경 이미지 */}
         <div className="absolute inset-0">
           <img
             src="/images/KSC03250_s-1.jpg"
             alt="웨딩 커버 사진"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover image-mask"
+            loading="eager"
+            decoding="async"
+            style={{
+              width: "100%",
+              height: "auto",
+              WebkitMaskImage: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)`,
+              maskImage: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              transform: "translateZ(0)",
+              willChange: "auto",
+              backfaceVisibility: "hidden",
+              // maskImage: `linear-gradient(0deg, transparent, rgba(0, 0, 0, .013) 1.1%, rgba(0, 0, 0, .049) 2.3%, rgba(0, 0, 0, .104) 3.58%, rgba(0, 0, 0, .175) 4.94%, rgba(0, 0, 0, .259) 6.34%, rgba(0, 0, 0, .352) 7.78%, rgba(0, 0, 0, .45) 9.26%, rgba(0, 0, 0, .55) 10.74%, rgba(0, 0, 0, .648) 12.22%, rgba(0, 0, 0, .741) 13.66%, rgba(0, 0, 0, .825) 15.06%, rgba(0, 0, 0, .896) 16.42%, rgba(0, 0, 0, .951) 17.7%, rgba(0, 0, 0, .987) 18.9%, #000 20%)`,
+              // WebkitMaskImage: `linear-gradient(180deg, transparent, rgba(0, 0, 0, .013) 1.1%, rgba(0, 0, 0, .049) 2.3%, rgba(0, 0, 0, .104) 3.58%, rgba(0, 0, 0, .175) 4.94%, rgba(0, 0, 0, .259) 6.34%, rgba(0, 0, 0, .352) 7.78%, rgba(0, 0, 0, .45) 9.26%, rgba(0, 0, 0, .55) 10.74%, rgba(0, 0, 0, .648) 12.22%, rgba(0, 0, 0, .741) 13.66%, rgba(0, 0, 0, .825) 15.06%, rgba(0, 0, 0, .896) 16.42%, rgba(0, 0, 0, .951) 17.7%, rgba(0, 0, 0, .987) 18.9%, #000 20%, #000 80%, rgba(0, 0, 0, .987) 81.1%, rgba(0, 0, 0, .951) 82.3%, rgba(0, 0, 0, .896) 83.58%, rgba(0, 0, 0, .825) 84.94%, rgba(0, 0, 0, .741) 86.34%, rgba(0, 0, 0, .648) 87.78%, rgba(0, 0, 0, .55) 89.26%, rgba(0, 0, 0, .45) 90.74%, rgba(0, 0, 0, .352) 92.22%, rgba(0, 0, 0, .259) 93.66%, rgba(0, 0, 0, .175) 95.06%, rgba(0, 0, 0, .104) 96.42%, rgba(0, 0, 0, .049) 97.7%, rgba(0, 0, 0, .013) 98.9%, transparent)`,
+              // maskImage: `linear-gradient(180deg, transparent, rgba(0, 0, 0, .013) 1.1%, rgba(0, 0, 0, .049) 2.3%, rgba(0, 0, 0, .104) 3.58%, rgba(0, 0, 0, .175) 4.94%, rgba(0, 0, 0, .259) 6.34%, rgba(0, 0, 0, .352) 7.78%, rgba(0, 0, 0, .45) 9.26%, rgba(0, 0, 0, .55) 10.74%, rgba(0, 0, 0, .648) 12.22%, rgba(0, 0, 0, .741) 13.66%, rgba(0, 0, 0, .825) 15.06%, rgba(0, 0, 0, .896) 16.42%, rgba(0, 0, 0, .951) 17.7%, rgba(0, 0, 0, .987) 18.9%, #000 20%, #000 80%, rgba(0, 0, 0, .987) 81.1%, rgba(0, 0, 0, .951) 82.3%, rgba(0, 0, 0, .896) 83.58%, rgba(0, 0, 0, .825) 84.94%, rgba(0, 0, 0, .741) 86.34%, rgba(0, 0, 0, .648) 87.78%, rgba(0, 0, 0, .55) 89.26%, rgba(0, 0, 0, .45) 90.74%, rgba(0, 0, 0, .352) 92.22%, rgba(0, 0, 0, .259) 93.66%, rgba(0, 0, 0, .175) 95.06%, rgba(0, 0, 0, .104) 96.42%, rgba(0, 0, 0, .049) 97.7%, rgba(0, 0, 0, .013) 98.9%, transparent)`,
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/30"></div>
+          {/* <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/30"></div> */}
         </div>
 
         {/* 비디오 오버레이 - screen blend mode */}
-        <div id="video-overlay" className="absolute inset-0 z-10">
+        <div id="video-overlay" className="absolute inset-0 z-8">
           <video
             autoPlay
             muted
@@ -98,21 +229,6 @@ function App() {
           >
             <source src="/videos/light.mp4" type="video/mp4" />
           </video>
-        </div>
-
-        {/* 상단 텍스트 */}
-        <div
-          id="top-text"
-          className="absolute top-8 left-6 right-6 z-20 opacity-0 fade-in-delayed"
-        >
-          <div className="flex justify-between items-start">
-            <span className="text-white/95 text-sm font-light tracking-[0.3em] drop-shadow-md">
-              SEONGWOOK
-            </span>
-            <span className="text-white/95 text-sm font-light tracking-[0.3em] drop-shadow-md">
-              HOEJIN
-            </span>
-          </div>
         </div>
 
         {/* 중앙 날짜 */}
@@ -132,32 +248,18 @@ function App() {
             </div>
           </div>
         </div>
-
-        {/* 하단 텍스트 */}
-        <div
-          id="bottom-text"
-          className="absolute bottom-20 left-6 right-6 z-20 opacity-0 fade-in-delayed"
-        >
-          <div className="flex justify-between items-end">
-            <span className="text-white/95 text-sm font-light tracking-[0.3em] drop-shadow-md">
-              TO BE
-            </span>
-            <span className="text-white/95 text-sm font-light tracking-[0.3em] drop-shadow-md">
-              TOGETHER
-            </span>
-          </div>
-        </div>
-
-        {/* 스크롤 인디케이터 */}
-        <div
-          id="scroll-indicator"
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 opacity-0 fade-in-delayed"
-        >
-          <div className="w-6 h-10 border-2 border-white/60 rounded-full">
-            <div className="w-1 h-3 bg-white/60 rounded-full mx-auto mt-2 animate-bounce"></div>
-          </div>
-        </div>
       </section>
+      {/* 하단 커플 정보 */}
+      <div id="couple-info" className="text-center pb-8 px-6">
+        <h2 className="text-xl font-medium text-text-primary mb-2">
+          성욱 | 회진
+        </h2>
+        <p className="text-text-secondary text-sm leading-relaxed">
+          2025년 12월 27일 토요일 오후 3시 20분
+          <br />
+          상록아트홀 5층 아트홀
+        </p>
+      </div>
 
       {/* 인사말 섹션 */}
       <section
@@ -239,16 +341,15 @@ function App() {
           </div>
         </div>
 
-        {/* 하단 커플 정보 */}
-        <div id="couple-info" className="text-center pb-8 px-6">
+        <div className="text-center">
           <h2 className="text-xl font-medium text-text-primary mb-2">
-            성욱 | 회진
+            조경연 • 김혜경{" "}
+            <span className="text-gray-500 text-sm">의 아들</span> 조성욱
           </h2>
-          <p className="text-text-secondary text-sm leading-relaxed">
-            2025년 12월 27일 토요일 오후 3시 20분
-            <br />
-            상록아트홀 5층 아트홀
-          </p>
+          <h2 className="text-xl font-medium text-text-primary mb-2">
+            양현교 • 박수진 <span className="text-gray-500 text-sm">의 딸</span>{" "}
+            양회진
+          </h2>
         </div>
       </section>
 
@@ -360,6 +461,17 @@ function App() {
         </div>
       </section>
 
+      {/* 참석의사 전달 섹션 */}
+      <section
+        id="attendance-check"
+        ref={attendanceAnimation.elementRef}
+        className={`px-6 py-8 bg-cream-primary/20 scroll-slide-up ${
+          attendanceAnimation.isVisible ? "animate" : ""
+        }`}
+      >
+        <AttendanceCheck />
+      </section>
+
       {/* 마음 전하는 곳 */}
       <section
         id="gift-info"
@@ -393,9 +505,15 @@ function App() {
 
       {/* 감사 인사 */}
       <div
-        className="relative h-screen bg-cover bg-center bg-no-repeat text-gray-700 text-center flex items-center justify-center"
+        className="relative mobile-viewport-fix bg-cover bg-center bg-no-repeat text-gray-700 text-center flex items-center justify-center"
         style={{
           backgroundImage: "url('/images/KSC03250_s-1.jpg')",
+          backgroundAttachment: "scroll",
+          transform: "translateZ(0)",
+          willChange: "auto",
+          contain: "layout style",
+          minHeight: "500px",
+          maxHeight: "80vh",
           WebkitMaskImage: `linear-gradient(180deg, 
             transparent, 
             rgba(0, 0, 0, .013) 1.1%, 
@@ -513,16 +631,22 @@ function App() {
                   alert("링크가 복사되었습니다!");
                 }
               }}
-              className="inline-flex items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-gray-800 text-xs font-medium py-2 px-4 rounded-full transition-all duration-200 hover:scale-105"
+              className="inline-flex items-center space-x-2 text-gray-800 text-xs font-medium py-2 px-4 rounded-full transition-all duration-200 hover:scale-105"
             >
-              <span className="text-sm">💬</span>
+              <span className="text-sm">
+                <img
+                  src="/images/icon-kakaotalk.svg"
+                  alt="카카오톡"
+                  className="w-4 h-4"
+                />
+              </span>
               <span>카카오톡으로 초대장 보내기</span>
             </button>
 
             {/* 저작권 정보 */}
-            <p className="text-xs text-gray-500 opacity-70">
+            {/* <p className="text-xs text-gray-500 opacity-70">
               Copyright © 2025. Seongwook & Hoejin All rights reserved.
-            </p>
+            </p> */}
           </div>
         </div>
       </footer>

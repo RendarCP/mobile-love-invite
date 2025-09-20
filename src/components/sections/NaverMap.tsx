@@ -1,22 +1,6 @@
-import { WineOff } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 
-// 네이버 맵 및 카카오 내비 타입 정의
-declare global {
-  interface Window {
-    naver: any;
-    Kakao?: {
-      Navi?: {
-        share: (options: {
-          name: string;
-          x: number;
-          y: number;
-          coordType: string;
-        }) => void;
-      };
-    };
-  }
-}
+// Window 타입은 App.tsx에서 정의됨
 
 interface NaverMapProps {
   /** 웨딩홀 위도 */
@@ -39,7 +23,7 @@ const NaverMap: React.FC<NaverMapProps> = ({
   venueAddress,
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<unknown>(null);
 
   // 카카오맵 내비 공유 함수
   const handleKakaoNavi = () => {
@@ -82,7 +66,8 @@ const NaverMap: React.FC<NaverMapProps> = ({
   useEffect(() => {
     // 네이버 맵 API가 로드될 때까지 대기
     const initializeMap = () => {
-      if (!window.naver || !window.naver.maps) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (!window.naver || !(window.naver as any).maps) {
         console.warn("네이버 맵 API가 아직 로드되지 않았습니다.");
         return;
       }
@@ -90,8 +75,10 @@ const NaverMap: React.FC<NaverMapProps> = ({
       if (!mapElement.current) return;
 
       // 지도 생성
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const naverMaps = (window.naver as any).maps;
       const mapOptions = {
-        center: new window.naver.maps.LatLng(latitude, longitude),
+        center: new naverMaps.LatLng(latitude, longitude),
         zoom: 16,
         mapTypeControl: false,
         scaleControl: false,
@@ -100,7 +87,7 @@ const NaverMap: React.FC<NaverMapProps> = ({
         zoomControl: false,
         disableTwoFingerTapZoom: false,
         zoomControlOptions: {
-          position: window.naver.maps.Position.TOP_RIGHT,
+          position: naverMaps.Position.TOP_RIGHT,
         },
         draggable: false,
         scrollWheel: false,
@@ -108,14 +95,11 @@ const NaverMap: React.FC<NaverMapProps> = ({
         disableDoubleClickZoom: true,
       };
 
-      mapRef.current = new window.naver.maps.Map(
-        mapElement.current,
-        mapOptions
-      );
+      mapRef.current = new naverMaps.Map(mapElement.current, mapOptions);
 
       // 마커 생성
-      new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(latitude, longitude),
+      new naverMaps.Marker({
+        position: new naverMaps.LatLng(latitude, longitude),
         map: mapRef.current,
         title: venueName,
         // icon: {
@@ -196,12 +180,14 @@ const NaverMap: React.FC<NaverMapProps> = ({
     };
 
     // 네이버 맵 API 로드 확인
-    if (window.naver && window.naver.maps) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (window.naver && (window.naver as any).maps) {
       initializeMap();
     } else {
       // API가 아직 로드되지 않은 경우 대기
       const checkNaver = setInterval(() => {
-        if (window.naver && window.naver.maps) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (window.naver && (window.naver as any).maps) {
           clearInterval(checkNaver);
           initializeMap();
         }

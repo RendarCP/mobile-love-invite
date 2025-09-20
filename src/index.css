@@ -27,6 +27,108 @@
 
   html {
     scroll-behavior: smooth;
+    /* 모바일 브라우저 URL바 변화 최적화 */
+    height: 100%;
+    height: 100dvh;
+    /* 모바일 주소창 변화에 대한 안정화 */
+    overscroll-behavior: none;
+  }
+
+  /* 뷰포트 안정화를 위한 추가 최적화 */
+  html,
+  body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    /* iOS Safari 주소창 대응 */
+    min-height: -webkit-fill-available;
+  }
+
+  /* 모바일 브라우저에서 뷰포트 크기 변화시 부드러운 전환 */
+  .viewport-stable {
+    height: 100vh;
+    height: 100dvh;
+    transition: height 0.2s ease-out;
+  }
+
+  /* 커스텀 뷰포트 높이를 사용하는 클래스 */
+  .vh-custom {
+    height: calc(var(--vh, 1vh) * 100);
+  }
+
+  /* 풀스크린 섹션 최적화 */
+  .fullscreen-section {
+    height: 100vh;
+    height: 100dvh;
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    position: relative;
+    overflow: hidden;
+    /* 모바일에서 리사이즈 방지 */
+    contain: layout style;
+  }
+
+  /* 모바일 브라우저 안정화 클래스 */
+  .mobile-viewport-fix {
+    height: 100vh;
+    height: 100dvh;
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: -webkit-fill-available;
+    /* viewport 변화 시 부드러운 전환 방지 (이미지 버벅임 해결) */
+    will-change: auto;
+    contain: layout style;
+    isolation: isolate;
+  }
+
+  /* 이미지 최적화 클래스 */
+  .image-fix {
+    /* GPU 가속 및 렌더링 최적화 */
+    transform: translateZ(0);
+    will-change: auto;
+    backface-visibility: hidden;
+    /* 이미지 스케일링 최적화 */
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    /* 레이어 분리로 리플로우 방지 */
+    contain: layout style;
+  }
+  .image-mask {
+    mask-image: linear-gradient(
+      180deg,
+      transparent,
+      rgba(0, 0, 0, 0.013) 1.1%,
+      rgba(0, 0, 0, 0.049) 2.3%,
+      rgba(0, 0, 0, 0.104) 3.58%,
+      rgba(0, 0, 0, 0.175) 4.94%,
+      rgba(0, 0, 0, 0.259) 6.34%,
+      rgba(0, 0, 0, 0.352) 7.78%,
+      rgba(0, 0, 0, 0.45) 9.26%,
+      rgba(0, 0, 0, 0.55) 10.74%,
+      rgba(0, 0, 0, 0.648) 12.22%,
+      rgba(0, 0, 0, 0.741) 13.66%,
+      rgba(0, 0, 0, 0.825) 15.06%,
+      rgba(0, 0, 0, 0.896) 16.42%,
+      rgba(0, 0, 0, 0.951) 17.7%,
+      rgba(0, 0, 0, 0.987) 18.9%,
+      #000 20%,
+      #000 80%,
+      rgba(0, 0, 0, 0.987) 81.1%,
+      rgba(0, 0, 0, 0.951) 82.3%,
+      rgba(0, 0, 0, 0.896) 83.58%,
+      rgba(0, 0, 0, 0.825) 84.94%,
+      rgba(0, 0, 0, 0.741) 86.34%,
+      rgba(0, 0, 0, 0.648) 87.78%,
+      rgba(0, 0, 0, 0.55) 89.26%,
+      rgba(0, 0, 0, 0.45) 90.74%,
+      rgba(0, 0, 0, 0.352) 92.22%,
+      rgba(0, 0, 0, 0.259) 93.66%,
+      rgba(0, 0, 0, 0.175) 95.06%,
+      rgba(0, 0, 0, 0.104) 96.42%,
+      rgba(0, 0, 0, 0.049) 97.7%,
+      rgba(0, 0, 0, 0.013) 98.9%,
+      transparent
+    );
   }
 }
 
@@ -149,6 +251,20 @@
 }
 
 @layer utilities {
+  /* 모바일 주소창 대응 유틸리티 */
+  .h-screen-mobile {
+    height: 100vh;
+    height: 100dvh;
+    height: calc(var(--vh, 1vh) * 100);
+    min-height: -webkit-fill-available;
+  }
+
+  .min-h-screen-mobile {
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: calc(var(--vh, 1vh) * 100);
+    min-height: -webkit-fill-available;
+  }
   /* 모바일 터치 영역 */
   .touch-target {
     @apply min-h-[44px] min-w-[44px];

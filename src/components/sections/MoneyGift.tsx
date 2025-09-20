@@ -20,33 +20,44 @@ interface AccountInfo {
 const groomAccounts: AccountInfo[] = [
   {
     relation: "신랑",
-    name: "최성욱",
-    bank: "신한은행",
-    account: "110-123-456789",
+    name: "조경연",
+    bank: "SC제일은행",
+    account: "103-20-121191",
     kakaopay: true,
   },
   {
     relation: "신랑",
-    name: "최도현",
-    bank: "신한은행",
-    account: "110-123-456789",
+    name: "김혜경",
+    bank: "농협",
+    account: "215055-52-186487",
+  },
+  {
+    relation: "신랑",
+    name: "조성욱",
+    bank: "국민은행",
+    account: "206802-04-300186",
   },
 ];
 
 // 신부측 계좌정보
 const brideAccounts: AccountInfo[] = [
   {
-    relation: "국민",
-    name: "이하나",
+    relation: "신부",
+    name: "양현교",
     bank: "국민은행",
-    account: "200123-45-678900",
-    kakaopay: true,
+    account: "133-21-0086-076",
   },
   {
-    relation: "신한",
-    name: "이상대",
-    bank: "신한은행",
-    account: "110-123-456789",
+    relation: "신부",
+    name: "박수진",
+    bank: "부산은행",
+    account: "100-12-086166-7",
+  },
+  {
+    relation: "신부",
+    name: "양회진",
+    bank: "카카오뱅크",
+    account: "3333-04-9081536",
   },
 ];
 
