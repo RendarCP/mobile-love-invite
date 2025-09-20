@@ -108,7 +108,7 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
 
       {/* D-day 카운터 */}
       <div className="text-center">
-        <div className="grid grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-4 gap-4 mb-4" suppressHydrationWarning>
           <div className="text-center">
             <div className="text-2xl font-bold text-rose-primary">
               {Math.abs(daysUntil)}
@@ -135,7 +135,7 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
           </div>
         </div>
 
-        <div className="text-center">
+        <div className="text-center" suppressHydrationWarning>
           <p className="text-text-secondary text-sm">
             성욱 ♥ 회진의 결혼식이{" "}
             <span className="text-rose-primary font-medium">

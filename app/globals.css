@@ -1,0 +1,247 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 기존 CSS 스타일들을 유지 */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+/* 웨딩 테마 색상 변수 */
+:root {
+  --rose-primary: #f8bbd9;
+  --rose-secondary: #e879f9;
+  --cream-primary: #fef7ed;
+  --cream-secondary: #f3e8ff;
+  --gold-primary: #fcd34d;
+  --gold-secondary: #fbbf24;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+}
+
+/* 커스텀 폰트 */
+@font-face {
+  font-family: "Partial";
+  src: url("/fonts/partial.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-partial {
+  font-family: "Partial", sans-serif;
+}
+
+/* 모바일 뷰포트 최적화 */
+.min-h-screen-mobile {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* 스크롤 애니메이션 */
+.scroll-slide-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-slide-up.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-slide-up-delay {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-slide-up-delay.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-scale-up {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-scale-up.animate {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.scroll-fade-in {
+  opacity: 0;
+  transition: all 0.6s ease-out;
+}
+
+.scroll-fade-in.animate {
+  opacity: 1;
+}
+
+/* 날짜 슬라이드 애니메이션 */
+.date-slide-from-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.8s ease-out;
+}
+
+.date-slide-from-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.8s ease-out;
+}
+
+.date-delay-1 {
+  transition-delay: 0.2s;
+}
+
+.date-delay-2 {
+  transition-delay: 0.4s;
+}
+
+.date-delay-3 {
+  transition-delay: 0.6s;
+}
+
+/* 이미지 마스크 효과 */
+.image-mask {
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* 모바일 뷰포트 고정 */
+.mobile-viewport-fix {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* 이미지 최적화 */
+.image-fix {
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 반응형 텍스트 */
+@media (max-width: 480px) {
+  .text-responsive {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+/* 터치 최적화 */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 스크롤바 숨기기 */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 부드러운 스크롤 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 포커스 스타일 */
+.focus-visible:focus {
+  outline: 2px solid var(--rose-primary);
+  outline-offset: 2px;
+}
+
+/* 애니메이션 성능 최적화 */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 로딩 상태 */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

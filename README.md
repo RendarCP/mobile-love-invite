@@ -22,31 +22,45 @@
 
 ## 🛠️ 기술 스택
 
-- **Frontend**: React 18 + TypeScript
+- **Frontend**: Next.js 15 + React 19 + TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui + Radix UI
 - **Icons**: Lucide React
-- **Build Tool**: Vite
+- **API**: Next.js API Routes
+- **Database**: Google Sheets (참석 체크, 사진 업로드)
 - **Package Manager**: Yarn
 
 ## 🚀 시작하기
 
 ### 1. 환경변수 설정
 
-프로젝트 루트에 `.env` 파일을 생성하고 다음 환경변수를 설정하세요:
+프로젝트 루트에 `.env.local` 파일을 생성하고 다음 환경변수를 설정하세요:
 
 \`\`\`bash
 
-# .env 파일
+# .env.local 파일
 
-VITE_KAKAO_APP_KEY=your_kakao_javascript_key_here
-VITE_NAVER_MAP_KEY=your_naver_cloud_map_key_here
+# 카카오 SDK 앱 키
+
+NEXT_PUBLIC_KAKAO_APP_KEY=your_kakao_javascript_key_here
+
+# 네이버 맵 API 키
+
+NEXT_PUBLIC_NAVER_MAP_KEY=your_naver_cloud_map_key_here
+
+# Google Sheets API 설정 (참석 체크, 사진 업로드용)
+
+GOOGLE_SHEETS_PRIVATE_KEY=your_google_sheets_private_key
+GOOGLE_SHEETS_CLIENT_EMAIL=your_google_sheets_client_email
+GOOGLE_SHEETS_SHEET_ID=your_google_sheets_sheet_id
 \`\`\`
 
-> 💡 **환경변수는 App.tsx에서 자동으로 로드됩니다!**
+> 💡 **환경변수는 Next.js에서 자동으로 로드됩니다!**
 >
+> - `NEXT_PUBLIC_` 접두사가 있는 변수는 클라이언트에서 접근 가능
 > - 카카오 SDK는 앱 시작 시 자동 초기화
 > - 네이버 맵 API는 동적으로 로드
+> - Google Sheets API는 서버 사이드에서만 사용
 
 #### 카카오 앱 키 발급 방법:
 
@@ -77,19 +91,27 @@ yarn dev
 
 yarn build
 
-# 프로덕션 미리보기
+# 프로덕션 서버 실행
 
-yarn preview
+yarn start
 \`\`\`
 
-### 3. Netlify 배포 설정
+### 3. 배포 설정
 
-Netlify에서 환경변수를 설정하려면:
+#### Vercel 배포 (권장)
+
+1. [Vercel](https://vercel.com/)에 프로젝트 연결
+2. Environment Variables에서 다음 변수들을 추가:
+   - `NEXT_PUBLIC_KAKAO_APP_KEY`: 카카오 JavaScript 키
+   - `NEXT_PUBLIC_NAVER_MAP_KEY`: 네이버 맵 Client ID
+   - `GOOGLE_SHEETS_PRIVATE_KEY`: Google Sheets Private Key
+   - `GOOGLE_SHEETS_CLIENT_EMAIL`: Google Sheets Client Email
+   - `GOOGLE_SHEETS_SHEET_ID`: Google Sheets Sheet ID
+
+#### Netlify 배포
 
 1. Netlify 대시보드 → Site settings → Environment variables
-2. 다음 변수들을 추가:
-   - `VITE_KAKAO_APP_KEY`: 카카오 JavaScript 키
-   - `VITE_NAVER_MAP_KEY`: 네이버 맵 Client ID
+2. 위와 동일한 환경변수들을 추가
 
 ### 개발 환경
 
@@ -99,18 +121,29 @@ Netlify에서 환경변수를 설정하려면:
 ## 📁 프로젝트 구조
 
 \`\`\`
-src/
-├── components/
-│ ├── ui/ # shadcn/ui 기본 컴포넌트
-│ └── sections/ # 웨딩 섹션 컴포넌트들
-├── types/
-│ └── wedding.ts # TypeScript 타입 정의
-├── data/
-│ └── wedding-data.ts # 웨딩 정적 데이터
-├── lib/
-│ └── utils.ts # 유틸리티 함수
-└── styles/
-└── globals.css # 글로벌 스타일
+├── app/ # Next.js App Router
+│ ├── api/ # API 라우트
+│ │ ├── attendance/ # 참석 체크 API
+│ │ └── photo-upload/ # 사진 업로드 API
+│ ├── globals.css # 글로벌 스타일
+│ ├── layout.tsx # 루트 레이아웃
+│ └── page.tsx # 메인 페이지
+├── src/
+│ ├── components/
+│ │ ├── ui/ # shadcn/ui 기본 컴포넌트
+│ │ └── sections/ # 웨딩 섹션 컴포넌트들
+│ ├── types/
+│ │ └── wedding.ts # TypeScript 타입 정의
+│ ├── data/
+│ │ └── wedding-data.ts # 웨딩 정적 데이터
+│ ├── lib/
+│ │ └── utils.ts # 유틸리티 함수
+│ └── hooks/
+│ └── useScrollAnimation.ts # 스크롤 애니메이션 훅
+├── public/ # 정적 파일
+│ ├── images/ # 이미지 파일
+│ └── videos/ # 비디오 파일
+└── next.config.js # Next.js 설정
 \`\`\`
 
 ## 🎯 구현 예정 섹션

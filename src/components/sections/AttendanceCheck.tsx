@@ -3,25 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, CheckCircle } from "lucide-react";
 
-// SheetDB API 설정 - 매우 간단하고 빠름!
-const SHEETDB_API_URL = "https://sheetdb.io/api/v1/wzz3xrah9zw78";
-
-const submitToSheetDB = async (data: IAttendanceFormData) => {
+// Next.js API 라우트 사용
+const submitToAPI = async (data: IAttendanceFormData) => {
   const payload = {
-    타임스탬프: new Date().toLocaleString("ko-KR"),
-    구분: data.side === "groom" ? "신랑측" : "신부측",
-    성함: data.name,
-    참석인원: data.attendeeCount.toString(),
-    식사여부:
-      data.mealOption === "yes"
-        ? "예정"
-        : data.mealOption === "no"
-        ? "안함"
-        : "미정",
+    side: data.side,
+    name: data.name,
+    attendeeCount: data.attendeeCount,
+    mealOption: data.mealOption,
+    message: "", // 추가 메시지 필드 (필요시)
   };
 
   try {
-    const response = await fetch(SHEETDB_API_URL, {
+    const response = await fetch("/api/attendance", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,15 +22,17 @@ const submitToSheetDB = async (data: IAttendanceFormData) => {
       body: JSON.stringify(payload),
     });
 
-    if (response.ok) {
-      console.log("SheetDB에 데이터 전송 완료:", payload);
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      console.log("API에 데이터 전송 완료:", payload);
       return true;
     } else {
-      console.error("SheetDB 응답 오류:", response.status);
+      console.error("API 응답 오류:", result.message);
       return false;
     }
   } catch (error) {
-    console.error("SheetDB 전송 실패:", error);
+    console.error("API 전송 실패:", error);
     return false;
   }
 };
@@ -78,6 +73,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitProgress, setSubmitProgress] = useState(0);
   const [formData, setFormData] = useState<IAttendanceFormData>({
     side: "groom",
     name: "",
@@ -112,17 +108,32 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
     }
 
     setIsSubmitting(true);
+    setSubmitProgress(0);
 
     try {
-      // SheetDB API 방식 사용 (가장 간단하고 빠름!)
-      const success = await submitToSheetDB(formData);
+      // 진행률 시뮬레이션
+      setSubmitProgress(20);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      setSubmitProgress(40);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      setSubmitProgress(60);
+      // Next.js API 라우트 사용
+      const success = await submitToAPI(formData);
+
+      setSubmitProgress(80);
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       if (success) {
+        setSubmitProgress(100);
+        await new Promise((resolve) => setTimeout(resolve, 300));
         setIsSubmitted(true);
         // 2초 후 모달 닫기
         setTimeout(() => {
           setIsModalOpen(false);
           setIsSubmitted(false);
+          setSubmitProgress(0);
           // 폼 초기화
           setFormData({
             side: "groom",
@@ -335,9 +346,25 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-rose-primary hover:bg-rose-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-rose-primary hover:bg-rose-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                   >
-                    {isSubmitting ? "전송 중..." : "참석 의사 전달하기"}
+                    {isSubmitting ? (
+                      <>
+                        <div className="flex items-center justify-center">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          전송 중... ({submitProgress}%)
+                        </div>
+                        {/* 진행률 바 */}
+                        <div className="absolute bottom-0 left-0 h-1 bg-white/30 w-full">
+                          <div
+                            className="h-full bg-white/60 transition-all duration-500 ease-out"
+                            style={{ width: `${submitProgress}%` }}
+                          ></div>
+                        </div>
+                      </>
+                    ) : (
+                      "참석 의사 전달하기"
+                    )}
                   </Button>
                 </div>
               </form>
