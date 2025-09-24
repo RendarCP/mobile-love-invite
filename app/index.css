@@ -19,6 +19,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
+    --wedding-primary: var(--beige-primary);
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
@@ -187,6 +188,7 @@
   --gold-secondary: #fbbf24;
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
+  --beige-primary: #f7e7ce;
 }
 
 /* 커스텀 폰트 */

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Heart, Car, Train, Bus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import MoneyGift from "@/components/sections/MoneyGift";
 import WeddingCalendar from "@/components/sections/WeddingCalendar";
 import PhotoGallery from "@/components/sections/PhotoGallery";
@@ -11,6 +11,7 @@ import NaverMap from "@/components/sections/NaverMap";
 import PhotoUpload from "@/components/sections/PhotoUpload";
 import AttendanceCheck from "@/components/sections/AttendanceCheck";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import Image from "next/image";
 
 // 카카오톡 SDK 및 네이버 맵 확장 타입 정의
 declare global {
@@ -65,8 +66,8 @@ export default function HomePage() {
     name: "상록아트홀",
     address: "서울특별시 강남구 언주로 508(역삼동 701번지)",
     phone: "02-564-5757",
-    latitude: 37.503862, // 워커힐 호텔 좌표 (예시)
-    longitude: 127.0431764,
+    latitude: 37.5039191,
+    longitude: 127.0428353,
   };
 
   useEffect(() => {
@@ -161,9 +162,11 @@ export default function HomePage() {
       >
         {/* 배경 이미지 */}
         <div className="absolute inset-0">
-          <img
+          <Image
             src="/images/KSC03250_s-1.jpg"
             alt="웨딩 커버 사진"
+            width={400}
+            height={600}
             className="w-full h-full object-cover image-mask"
             loading="eager"
             decoding="async"
@@ -236,13 +239,13 @@ export default function HomePage() {
         {/* 상단 장식 아이콘 */}
         <div className="mb-6">
           <div className="flex justify-center mb-4">
-            <Heart className="w-6 h-6 text-rose-primary/50" />
+            <Heart className="w-6 h-6 text-wedding-primary" />
           </div>
         </div>
 
         {/* 구분선 */}
         <div className="my-8">
-          <div className="w-20 h-px bg-rose-primary/30 mx-auto"></div>
+          <div className="w-20 h-px bg-wedding-primary mx-auto"></div>
         </div>
 
         {/* INVITATION */}
@@ -264,14 +267,14 @@ export default function HomePage() {
           </p>
           <p>
             여기 곱고 예쁜 두 사람이{" "}
-            <span className="text-rose-primary">사랑</span>을 맺어
+            <span className="text-wedding-primary">사랑</span>을 맺어
             <br />
             인생의 반려자가 되려 합니다.
           </p>
           <p>
             새 인생을 시작하는 이 자리에 오셔서
             <br />
-            <span className="text-rose-primary">축복</span>해 주시면
+            <span className="text-wedding-primary">축복</span>해 주시면
             감사하겠습니다.
           </p>
         </div>
@@ -297,9 +300,11 @@ export default function HomePage() {
         {/* 메인 웨딩 사진 */}
         <div id="main-photo" className="px-6 mb-6">
           <div className="h-52 bg-gray-200 rounded-lg overflow-hidden shadow-lg">
-            <img
+            <Image
               src="/images/KSC03250_s-1.jpg"
               alt="웨딩 메인 사진"
+              width={400}
+              height={208}
               className="w-full h-full object-cover"
             />
           </div>
@@ -401,7 +406,13 @@ export default function HomePage() {
         </div>
 
         <div id="map-button" className="mt-6 text-center">
-          <Button onClick={() => setIsMapModalOpen(true)}>지도 보기</Button>
+          <Button
+            size="sm"
+            className="bg-wedding-primary"
+            onClick={() => setIsMapModalOpen(true)}
+          >
+            지도 보기
+          </Button>
         </div>
       </section>
 
@@ -540,7 +551,7 @@ export default function HomePage() {
       </div>
       <footer id="footer">
         {/* 최하단 카카오톡 버튼과 저작권 */}
-        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 py-4 px-6">
+        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 py-8 px-6">
           <div className="max-w-md mx-auto text-center space-y-3">
             {/* 카카오톡 공유 버튼 */}
             <button
@@ -578,9 +589,11 @@ export default function HomePage() {
               className="inline-flex items-center space-x-2 text-gray-800 text-xs font-medium py-2 px-4 rounded-full transition-all duration-200 hover:scale-105"
             >
               <span className="text-sm">
-                <img
+                <Image
                   src="/images/icon-kakaotalk.svg"
                   alt="카카오톡"
+                  width={16}
+                  height={16}
                   className="w-4 h-4"
                 />
               </span>
@@ -593,6 +606,7 @@ export default function HomePage() {
       {/* 지도 보기 팝업 모달 */}
       <Dialog open={isMapModalOpen} onOpenChange={setIsMapModalOpen}>
         <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-hidden p-0 bg-white">
+          <DialogTitle className="sr-only">오시는 길</DialogTitle>
           {/* 헤더 */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 className="text-lg font-medium text-text-primary">오시는 길</h3>
@@ -607,9 +621,11 @@ export default function HomePage() {
           {/* 지도 이미지 */}
           <div className="p-4">
             <div className="w-full">
-              <img
-                src="/images/location.jpg"
+              <Image
+                src="/images/wedding_location.webp"
                 alt="상록아트홀 위치 안내"
+                width={400}
+                height={300}
                 className="w-full h-auto rounded-lg shadow-sm"
                 style={{ maxHeight: "70vh", objectFit: "contain" }}
               />

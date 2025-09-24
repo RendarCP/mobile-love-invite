@@ -22,11 +22,48 @@ const NaverMap: React.FC<NaverMapProps> = ({
   const [isClient, setIsClient] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-  // 카카오맵 내비 공유 함수
+  // 모바일 디바이스 감지 유틸 함수
+  const isMobile = () =>
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
+  // 카카오맵 길찾기: 카카오 SDK 사용 (모바일) → 실패 시 웹 링크 폴백
   const handleKakaoNavi = () => {
-    if (typeof window !== "undefined") {
-      window.open("https://kko.kakao.com/ikjQWC0Mmj", "_blank");
+    if (typeof window === "undefined") return;
+
+    console.log("kakaoWebUrl venueName", venueName);
+    // 1) 웹 폴백용 (앱 없거나 PC일 때)
+    const kakaoWebUrl = `https://map.kakao.com/link/to/${encodeURIComponent(
+      venueName
+    )},${latitude},${longitude}`;
+
+    // 2) 모바일에서 카카오 SDK 사용
+    if (isMobile()) {
+      // 카카오 SDK가 로드되었는지 확인
+      if (window.Kakao && window.Kakao.Navi) {
+        try {
+          window.Kakao.Navi.share({
+            name: venueName,
+            x: longitude,
+            y: latitude,
+            coordType: "wgs84",
+          });
+          return;
+        } catch (error) {
+          console.warn("카카오 내비 실행 실패, 웹으로 폴백:", error);
+        }
+      } else {
+        console.warn("카카오 SDK가 로드되지 않음, 웹으로 폴백");
+      }
+
+      // SDK 실패 시 웹으로 폴백
+      window.location.href = kakaoWebUrl;
+      return;
     }
+
+    // PC는 웹으로
+    window.open(kakaoWebUrl, "_blank");
   };
 
   useEffect(() => {

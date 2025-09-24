@@ -23,7 +23,7 @@ const groomAccounts: AccountInfo[] = [
     name: "조경연",
     bank: "SC제일은행",
     account: "103-20-121191",
-    kakaopay: true,
+    // kakaopay: true,
   },
   {
     relation: "신랑",
@@ -43,7 +43,7 @@ const groomAccounts: AccountInfo[] = [
 const brideAccounts: AccountInfo[] = [
   {
     relation: "신부",
-    name: "양현교",
+    name: "양형교",
     bank: "국민은행",
     account: "133-21-0086-076",
   },
@@ -128,8 +128,8 @@ export default function MoneyGift() {
                 value="groom"
                 className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-rose-primary/50"
               >
-                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-rose-primary/10 group">
-                  <span className="group-hover:text-rose-primary transition-colors duration-200">
+                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 group">
+                  <span className=" transition-colors duration-200">
                     신랑측 계좌번호
                   </span>
                 </AccordionTrigger>
@@ -154,8 +154,8 @@ export default function MoneyGift() {
                 value="bride"
                 className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-rose-primary/50"
               >
-                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 hover:bg-rose-primary/10 group">
-                  <span className="group-hover:text-rose-primary transition-colors duration-200">
+                <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200  group">
+                  <span className="transition-colors duration-200">
                     신부측 계좌번호
                   </span>
                 </AccordionTrigger>

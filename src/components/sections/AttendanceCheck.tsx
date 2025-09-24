@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { X, CheckCircle } from "lucide-react";
 
 // Next.js API 라우트 사용
@@ -185,8 +185,8 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
       {/* 참석의사 전달하기 버튼 */}
       <Button
         onClick={() => setIsModalOpen(true)}
-        className="bg-rose-primary hover:bg-rose-primary/90 text-white px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
-        size="lg"
+        className="bg-wedding-primary hover:bg-wedding-primary/90 text-white px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
+        size="sm"
       >
         <CheckCircle className="w-4 h-4 mr-2" />
         참석의사 전달하기
@@ -195,6 +195,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
       {/* 참석의사 전달 모달 */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="max-w-sm mx-auto p-0 bg-white rounded-lg overflow-hidden">
+          <DialogTitle className="sr-only">참석의사 전달</DialogTitle>
           {/* 성공 화면 */}
           {isSubmitted ? (
             <div className="p-8 text-center">
@@ -345,8 +346,9 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                 <div className="pt-4">
                   <Button
                     type="submit"
+                    size="md"
                     disabled={isSubmitting}
-                    className="w-full bg-rose-primary hover:bg-rose-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+                    className="w-full bg-wedding-primary hover:bg-wedding-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                   >
                     {isSubmitting ? (
                       <>

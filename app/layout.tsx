@@ -47,6 +47,7 @@ export default function RootLayout({
           integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
           crossOrigin="anonymous"
         />
+        <Script src="https://developers.kakao.com/sdk/js/kakao.js"></Script>
         {/* 네이버 맵 API는 동적으로 로드됩니다 */}
       </head>
       <body className="antialiased" suppressHydrationWarning>
