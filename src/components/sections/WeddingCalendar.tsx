@@ -32,9 +32,19 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
   // 달력에 표시할 날짜들 생성
   const calendarDays = [];
 
-  // 이전 달의 마지막 날짜들
+  // 12월 1일의 요일 계산 (0=일요일, 1=월요일, ...)
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
 
-  // 현재 달의 날짜들
+  // 빈 공간을 위한 더미 데이터 (이전 달 날짜 대신)
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    calendarDays.push({
+      day: null,
+      isCurrentMonth: false,
+      isPrevMonth: false,
+    });
+  }
+
+  // 12월 날짜들만 표시
   for (let day = 1; day <= daysInMonth; day++) {
     calendarDays.push({
       day: day,
@@ -70,11 +80,19 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
       <div className="mb-6">
         {/* 요일 헤더 */}
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {weekDays.map((day) => (
-            <div key={day} className={`text-center text-sm font-medium py-2 `}>
-              {day}
-            </div>
-          ))}
+          {weekDays.map((day, index) => {
+            const isWeekend = index === 0 || index === 6; // 일요일(0) 또는 토요일(6)
+            return (
+              <div
+                key={day}
+                className={`text-center text-sm font-medium py-2 ${
+                  isWeekend ? "text-gray-400 opacity-60" : "text-text-primary"
+                }`}
+              >
+                {day}
+              </div>
+            );
+          })}
         </div>
 
         {/* 날짜 그리드 */}
@@ -95,13 +113,9 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
                       ? "bg-wedding-primary text-white font-bold shadow-lg"
                       : dateObj.isCurrentMonth
                       ? `text-text-primary hover:bg-gray-100 ${
-                          isWeekend
-                            ? dayOfWeek === 0
-                              ? "text-red-500"
-                              : "text-blue-500"
-                            : ""
+                          isWeekend ? "text-gray-400 opacity-60" : ""
                         }`
-                      : "text-gray-300"
+                      : "text-transparent"
                   }
                 `}
               >

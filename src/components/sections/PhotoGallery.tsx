@@ -323,7 +323,7 @@ export default function PhotoGallery() {
             <DialogTitle className="sr-only">사진 갤러리</DialogTitle>
             <div className="relative w-full h-full flex items-center justify-center z-100">
               {/* 사진 갯수 표시 (왼쪽 위) */}
-              <div className="absolute top-6 left-6 z-50 text-white/80 text-sm font-light bg-rose-primary rounded-full px-2 py-1">
+              <div className="absolute top-6 left-6 z-50 text-white/80 text-sm font-light bg-wedding-primary rounded-full px-2 py-1">
                 {currentIndex + 1} / {photos.length}
               </div>
 

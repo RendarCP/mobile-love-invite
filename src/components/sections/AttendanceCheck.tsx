@@ -204,7 +204,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
 
       {/* 참석의사 전달 모달 */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
-        <DialogContent className="max-w-sm mx-auto p-0 bg-white rounded-lg overflow-hidden">
+        <DialogContent className="max-w-sm mx-auto p-0 bg-white rounded-lg overflow-hidden gap-0">
           <DialogTitle className="sr-only">참석의사 전달</DialogTitle>
           {/* 성공 화면 */}
           {isSubmitted ? (
@@ -222,7 +222,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
           ) : (
             <>
               {/* 헤더 */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between py-4 border-gray-200">
                 <h3 className="text-lg font-medium text-text-primary">
                   참석의사 전달
                 </h3>
@@ -236,7 +236,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
               </div>
 
               {/* 폼 */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {/* 구분 (신랑측/신부측) */}
                 <div>
                   <label className="block text-sm font-medium text-text-primary mb-2">

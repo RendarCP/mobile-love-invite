@@ -261,7 +261,7 @@ export default function PhotoUpload() {
                 </div>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div>
                 {/* 감성적인 문구들 */}
                 <div className="text-center space-y-2 py-4">
                   <p className="text-wedding-primary text-sm font-medium">
@@ -314,7 +314,7 @@ export default function PhotoUpload() {
 
                 {/* 선택된 사진 미리보기 */}
                 {previewPhotos.length > 0 && (
-                  <div className="space-y-3">
+                  <div className="space-y-3 mt-4">
                     <div className="flex items-center justify-center space-x-2">
                       <Heart className="w-4 h-4 text-wedding-primary" />
                       <span className="text-sm text-text-secondary">
@@ -323,7 +323,7 @@ export default function PhotoUpload() {
                       <Heart className="w-4 h-4 text-wedding-primary" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
                       {previewPhotos.map((photo, index) => (
                         <div
                           key={photo.id}
@@ -334,7 +334,7 @@ export default function PhotoUpload() {
                           }}
                         >
                           <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative">
-                            <Image
+                            <img
                               src={photo.preview}
                               alt={`선택된 사진 ${index + 1}`}
                               className={`w-full h-full object-cover transition-all duration-300 ${
@@ -377,7 +377,7 @@ export default function PhotoUpload() {
                 )}
 
                 {/* 업로드 버튼 */}
-                <div className="flex space-x-3 pt-4">
+                <div className="flex space-x-3 mt-4">
                   <Button
                     size="sm"
                     onClick={closeModal}
