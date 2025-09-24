@@ -1,71 +1,41 @@
-import React, { useEffect, useRef } from "react";
-
-// Window 타입은 App.tsx에서 정의됨
+import React, { useEffect, useRef, useState } from "react";
 
 interface NaverMapProps {
-  /** 웨딩홀 위도 */
-  latitude: number;
-  /** 웨딩홀 경도 */
-  longitude: number;
-  /** 웨딩홀 이름 */
   venueName: string;
-  /** 웨딩홀 주소 */
   venueAddress: string;
+  latitude: number;
+  longitude: number;
 }
 
 /**
- * 네이버 맵을 표시하는 컴포넌트
+ * 네이버 맵 컴포넌트
+ * 결혼식 장소의 위치를 표시하고 네비게이션 기능을 제공합니다.
  */
 const NaverMap: React.FC<NaverMapProps> = ({
-  latitude,
-  longitude,
   venueName,
   venueAddress,
+  latitude,
+  longitude,
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapRef = useRef<unknown>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   // 카카오맵 내비 공유 함수
   const handleKakaoNavi = () => {
-    // const openAlert = (msg: string) => {
-    //   alert(msg);
-    // };
-    window.open("https://kko.kakao.com/OXftsQIo4C", "_blank");
-
-    // if (window.Kakao && window.Kakao.Navi) {
-    //   try {
-    //     window.Kakao.Navi.share({
-    //       name: venueName,
-    //       x: longitude,
-    //       y: latitude,
-    //       coordType: "wgs84",
-    //     });
-    //   } catch (error) {
-    //     console.error("카카오 내비 공유 실패:", error);
-    //     openAlert("카카오 내비 앱이 설치되어 있지 않습니다.");
-    //     // 대체 방법으로 카카오맵 웹 페이지 열기
-    //     window.open(
-    //       `https://map.kakao.com/link/to/${encodeURIComponent(
-    //         venueName
-    //       )},${latitude},${longitude}`,
-    //       "_blank"
-    //     );
-    //   }
-    // } else {
-    //   openAlert("카카오 SDK가 로드되지 않았습니다.");
-    //   // 대체 방법으로 카카오맵 웹 페이지 열기
-    //   window.open(
-    //     `https://map.kakao.com/link/to/${encodeURIComponent(
-    //       venueName
-    //     )},${latitude},${longitude}`,
-    //     "_blank"
-    //   );
-    // }
+    if (typeof window !== "undefined") {
+      window.open("https://kko.kakao.com/ikjQWC0Mmj", "_blank");
+    }
   };
 
   useEffect(() => {
+    setIsClient(true);
+
     // 네이버 맵 API가 로드될 때까지 대기
     const initializeMap = () => {
+      if (typeof window === "undefined") return;
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (!window.naver || !(window.naver as any).maps) {
         console.warn("네이버 맵 API가 아직 로드되지 않았습니다.");
@@ -79,22 +49,17 @@ const NaverMap: React.FC<NaverMapProps> = ({
       const naverMaps = (window.naver as any).maps;
       const mapOptions = {
         center: new naverMaps.LatLng(latitude, longitude),
-        zoom: 16,
+        zoom: 17,
         mapTypeControl: false,
         scaleControl: false,
         logoControl: false,
         mapDataControl: false,
         zoomControl: false,
-        disableTwoFingerTapZoom: false,
-        zoomControlOptions: {
-          position: naverMaps.Position.TOP_RIGHT,
-        },
         draggable: false,
         scrollWheel: false,
-        disableDoubleTapZoom: true,
-        disableDoubleClickZoom: true,
       };
 
+      // 지도 인스턴스 생성
       mapRef.current = new naverMaps.Map(mapElement.current, mapOptions);
 
       // 마커 생성
@@ -102,98 +67,28 @@ const NaverMap: React.FC<NaverMapProps> = ({
         position: new naverMaps.LatLng(latitude, longitude),
         map: mapRef.current,
         title: venueName,
-        // icon: {
-        //   content: `
-        //     <div style="
-        //       background: #F4C2C2;
-        //       color: white;
-        //       padding: 8px 12px;
-        //       border-radius: 20px;
-        //       font-size: 12px;
-        //       font-weight: 600;
-        //       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        //       position: relative;
-        //       border: 2px solid white;
-        //     ">
-        //       💒 ${venueName}
-        //       <div style="
-        //         position: absolute;
-        //         bottom: -5px;
-        //         left: 50%;
-        //         transform: translateX(-50%);
-        //         width: 0;
-        //         height: 0;
-        //         border-left: 6px solid transparent;
-        //         border-right: 6px solid transparent;
-        //         border-top: 6px solid #F4C2C2;
-        //       "></div>
-        //     </div>
-        //   `,
-        //   anchor: new window.naver.maps.Point(0, 0),
-        // },
       });
 
-      // // 정보창 생성
-      // const infoWindow = new window.naver.maps.InfoWindow({
-      //   content: `
-      //     <div style="padding: 16px; max-width: 200px;">
-      //       <h4 style="margin: 0 0 8px 0; color: #2D2D2D; font-size: 14px; font-weight: 600;">
-      //         ${venueName}
-      //       </h4>
-      //       <p style="margin: 0; color: #666; font-size: 12px; line-height: 1.4;">
-      //         ${venueAddress}
-      //       </p>
-      //       <div style="margin-top: 12px;">
-      //         <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(
-      //           venueName
-      //         )}', '_blank')"
-      //           style="
-      //             background: #F4C2C2;
-      //             color: white;
-      //             border: none;
-      //             padding: 6px 12px;
-      //             border-radius: 4px;
-      //             font-size: 11px;
-      //             cursor: pointer;
-      //             font-weight: 500;
-      //           ">
-      //           네이버지도 열기
-      //         </button>
-      //       </div>
-      //     </div>
-      //   `,
-      //   borderWidth: 0,
-      //   backgroundColor: "white",
-      //   borderColor: "#F4C2C2",
-      //   borderRadius: "8px",
-      //   boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-      // });
-
-      // // 마커 클릭 시 정보창 표시
-      // window.naver.maps.Event.addListener(marker, "click", () => {
-      //   if (infoWindow.getMap()) {
-      //     infoWindow.close();
-      //   } else {
-      //     infoWindow.open(mapRef.current, marker);
-      //   }
-      // });
+      setIsMapLoaded(true);
     };
 
     // 네이버 맵 API 로드 확인
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (window.naver && (window.naver as any).maps) {
-      initializeMap();
-    } else {
-      // API가 아직 로드되지 않은 경우 대기
-      const checkNaver = setInterval(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (window.naver && (window.naver as any).maps) {
-          clearInterval(checkNaver);
-          initializeMap();
-        }
-      }, 100);
+    if (typeof window !== "undefined") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (window.naver && (window.naver as any).maps) {
+        initializeMap();
+      } else {
+        // API가 아직 로드되지 않은 경우 대기
+        const checkNaver = setInterval(() => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if (window.naver && (window.naver as any).maps) {
+            clearInterval(checkNaver);
+            initializeMap();
+          }
+        }, 100);
 
-      return () => clearInterval(checkNaver);
+        return () => clearInterval(checkNaver);
+      }
     }
   }, [latitude, longitude, venueName, venueAddress]);
 
@@ -207,7 +102,7 @@ const NaverMap: React.FC<NaverMapProps> = ({
       />
 
       {/* 로딩 상태 */}
-      {!window.naver && (
+      {isClient && !isMapLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-rose-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
@@ -235,14 +130,16 @@ const NaverMap: React.FC<NaverMapProps> = ({
         {/* 외부 앱 연결 버튼들 */}
         <div className="flex space-x-2 mt-3">
           <button
-            onClick={() =>
-              window.open(
-                `https://map.naver.com/v5/search/${encodeURIComponent(
-                  venueName
-                )}/place/366784007?c=15.00,0,0,0,dh&placePath=/home?entry=bmp&from=map&fromPanelNum=2&timestamp=202509052343&locale=ko&svcName=map_pcv5&searchText=상록아트홀`,
-                "_blank"
-              )
-            }
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.open(
+                  `https://map.naver.com/v5/search/${encodeURIComponent(
+                    venueName
+                  )}/place/366784007?c=15.00,0,0,0,dh&placePath=/home?entry=bmp&from=map&fromPanelNum=2&timestamp=202509052343&locale=ko&svcName=map_pcv5&searchText=상록아트홀`,
+                  "_blank"
+                );
+              }
+            }}
             className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
           >
             네이버지도
@@ -255,21 +152,23 @@ const NaverMap: React.FC<NaverMapProps> = ({
           </button>
           <button
             onClick={() => {
-              // 티맵 앱 스키마 (길찾기 형태)
-              const tmapAppUrl = `tmap://route?goalx=${longitude}&goaly=${latitude}&goalname=${encodeURIComponent(
-                venueName
-              )}`;
+              if (typeof window !== "undefined") {
+                // 티맵 앱 스키마 (길찾기 형태)
+                const tmapAppUrl = `tmap://route?goalx=${longitude}&goaly=${latitude}&goalname=${encodeURIComponent(
+                  venueName
+                )}`;
 
-              // 모바일에서 앱 스키마 시도
-              if (
-                /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                  navigator.userAgent
-                )
-              ) {
-                window.location.href = tmapAppUrl;
-              } else {
-                // PC에서는 티맵 웹사이트로 이동
-                window.open("https://www.tmap.co.kr", "_blank");
+                // 모바일에서 앱 스키마 시도
+                if (
+                  /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                    navigator.userAgent
+                  )
+                ) {
+                  window.location.href = tmapAppUrl;
+                } else {
+                  // PC에서는 티맵 웹사이트로 이동
+                  window.open("https://www.tmap.co.kr", "_blank");
+                }
               }
             }}
             className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"

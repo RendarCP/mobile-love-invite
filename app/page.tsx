@@ -70,10 +70,12 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-    });
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+      });
+    }
   }, []);
 
   // 각 섹션별 스크롤 애니메이션 훅
@@ -88,6 +90,9 @@ export default function HomePage() {
 
   // API 초기화 및 뷰포트 최적화
   useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    if (typeof window === "undefined") return;
+
     // 카카오 SDK 초기화
     const initKakaoSDK = () => {
       const kakaoAppKey = process.env.NEXT_PUBLIC_KAKAO_APP_KEY;
@@ -306,7 +311,7 @@ export default function HomePage() {
             <span className="text-gray-500 text-sm">의 아들</span> 조성욱
           </h2>
           <h2 className="text-xl font-medium text-text-primary mb-2">
-            양현교 • 박수진 <span className="text-gray-500 text-sm">의 딸</span>{" "}
+            양형교 • 박수진 <span className="text-gray-500 text-sm">의 딸</span>{" "}
             양회진
           </h2>
         </div>
@@ -327,7 +332,7 @@ export default function HomePage() {
       <section
         id="gallery"
         ref={galleryAnimation.elementRef}
-        className={`px-6 py-8 bg-cream-primary/30 scroll-scale-up ${
+        className={`px-6 py-8  scroll-scale-up ${
           galleryAnimation.isVisible ? "animate" : ""
         }`}
       >
@@ -404,7 +409,7 @@ export default function HomePage() {
       <section
         id="attendance-check"
         ref={attendanceAnimation.elementRef}
-        className={`px-6 py-8 bg-cream-primary/20 scroll-slide-up ${
+        className={`px-6 py-8 scroll-slide-up ${
           attendanceAnimation.isVisible ? "animate" : ""
         }`}
       >
