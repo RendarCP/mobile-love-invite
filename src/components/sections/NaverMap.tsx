@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 interface NaverMapProps {
   venueName: string;
@@ -151,9 +152,6 @@ const NaverMap: React.FC<NaverMapProps> = ({
       {/* 지도 하단 정보 */}
       <div className="mt-3 p-3 bg-gray-50 rounded-lg">
         <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0 w-8 h-8 bg-rose-primary rounded-full flex items-center justify-center">
-            <span className="text-white text-sm">🏛️</span>
-          </div>
           <div className="flex-1">
             <h4 className="font-medium text-text-primary text-sm mb-1">
               {venueName}
@@ -177,15 +175,29 @@ const NaverMap: React.FC<NaverMapProps> = ({
                 );
               }
             }}
-            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-1"
           >
-            네이버지도
+            <Image
+              src="/images/naverMap.png"
+              alt="네이버지도"
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+            <span>네이버지도</span>
           </button>
           <button
             onClick={handleKakaoNavi}
-            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-1"
           >
-            카카오맵
+            <Image
+              src="/images/kakaoNavi.png"
+              alt="카카오내비"
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+            <span>카카오내비</span>
           </button>
           <button
             onClick={() => {
@@ -208,9 +220,16 @@ const NaverMap: React.FC<NaverMapProps> = ({
                 }
               }
             }}
-            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-1"
           >
-            티맵
+            <Image
+              src="/images/tmap.png"
+              alt="티맵"
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+            <span>티맵</span>
           </button>
         </div>
       </div>

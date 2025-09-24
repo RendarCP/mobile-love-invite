@@ -40,7 +40,8 @@ function createServiceAccountAuth() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { side, name, attendeeCount, mealOption, message } = body;
+    const { side, name, phoneLastDigits, attendeeCount, mealOption, message } =
+      body;
 
     // 환경 변수 검증 및 인증 객체 생성
     const serviceAccountAuth = createServiceAccountAuth();
@@ -60,8 +61,9 @@ export async function POST(request: NextRequest) {
     await sheet.addRow({
       구분: side === "groom" ? "신랑측" : "신부측",
       성함: name,
+      전화번호뒷자리: phoneLastDigits,
       참석인원: attendeeCount,
-      식사여부:
+      참석여부:
         mealOption === "yes" ? "예정" : mealOption === "no" ? "안함" : "미정",
       메시지: message || "",
       타임스탬프: new Date().toLocaleString("ko-KR"),
