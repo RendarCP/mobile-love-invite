@@ -172,7 +172,6 @@ export default function HomePage() {
             decoding="async"
             style={{
               width: "100%",
-              height: "auto",
               WebkitMaskImage: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)`,
               maskImage: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)`,
               WebkitMaskRepeat: "no-repeat",
@@ -204,20 +203,20 @@ export default function HomePage() {
           className="absolute inset-0 flex items-center justify-center z-20"
         >
           <div className="text-center">
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider drop-shadow-2xl mb-4 opacity-0 date-slide-from-left date-delay-1">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider drop-shadow-2xl mb-3 opacity-0 date-slide-from-left date-delay-1">
               25
             </div>
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-4 opacity-0 date-slide-from-right date-delay-2">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-3 opacity-0 date-slide-from-right date-delay-2">
               12
             </div>
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-4 opacity-0 date-slide-from-left date-delay-3">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-3 opacity-0 date-slide-from-left date-delay-3">
               27
             </div>
           </div>
         </div>
       </section>
       {/* 하단 커플 정보 */}
-      <div id="couple-info" className="text-center pb-8 px-6">
+      <div id="couple-info" className="text-center pb-8 px-6 pt-8">
         <h2 className="text-xl font-medium text-text-primary mb-2">
           성욱 | 회진
         </h2>
@@ -369,7 +368,7 @@ export default function HomePage() {
         {/* 교통편 안내 */}
         <div id="transport-info" className="space-y-4">
           <div className="flex items-start">
-            <Train className="w-5 h-5 text-rose-primary mt-1 mr-4" />
+            <Train className="w-5 h-5 text-wedding-primary mt-1 mr-4" />
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">지하철</h4>
               <p className="text-text-secondary text-sm">
@@ -381,7 +380,7 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-start">
-            <Bus className="w-5 h-5 text-rose-primary mt-1 mr-4" />
+            <Bus className="w-5 h-5 text-wedding-primary mt-1 mr-4" />
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">버스</h4>
               <p className="text-text-secondary text-sm">
@@ -394,7 +393,7 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-start">
-            <Car className="w-5 h-5 text-rose-primary mt-1 mr-4" />
+            <Car className="w-5 h-5 text-wedding-primary mt-1 mr-4" />
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">자동차</h4>
               <p className="text-text-secondary text-sm">
@@ -540,18 +539,18 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-md mx-auto px-6">
           {/* 메인 텍스트 */}
           <div className="mb-8 text-center">
-            <p className="text-white text-lg mb-6 font-light tracking-wide drop-shadow-lg">
+            <p className="text-white text-lg mb-6 font-bold tracking-wide drop-shadow-lg">
               감사합니다
             </p>
-            <p className="text-base text-white font-light tracking-wide drop-shadow-lg">
+            <p className="text-base text-white font-bold tracking-wide drop-shadow-lg">
               2025.12.27
             </p>
           </div>
         </div>
       </div>
-      <footer id="footer">
+      <footer id="footer" className="border-none">
         {/* 최하단 카카오톡 버튼과 저작권 */}
-        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200/50 py-8 px-6">
+        <div className="bg-white/90 backdrop-blur-sm  border-gray-200/50 py-8 px-6">
           <div className="max-w-md mx-auto text-center space-y-3">
             {/* 카카오톡 공유 버튼 */}
             <button
@@ -605,10 +604,10 @@ export default function HomePage() {
 
       {/* 지도 보기 팝업 모달 */}
       <Dialog open={isMapModalOpen} onOpenChange={setIsMapModalOpen}>
-        <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-hidden p-0 bg-white">
+        <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-hidden p-0 bg-white gap-0">
           <DialogTitle className="sr-only">오시는 길</DialogTitle>
           {/* 헤더 */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between pb-4 border-gray-200">
             <h3 className="text-lg font-medium text-text-primary">오시는 길</h3>
             <button
               onClick={() => setIsMapModalOpen(false)}
@@ -619,29 +618,17 @@ export default function HomePage() {
           </div>
 
           {/* 지도 이미지 */}
-          <div className="p-4">
+          <div>
             <div className="w-full">
               <Image
                 src="/images/wedding_location.webp"
                 alt="상록아트홀 위치 안내"
                 width={400}
                 height={300}
-                className="w-full h-auto rounded-lg shadow-sm"
-                style={{ maxHeight: "70vh", objectFit: "contain" }}
+                priority
+                className="w-full h-auto rounded-lg"
+                style={{ maxHeight: "80vh", objectFit: "contain" }}
               />
-            </div>
-
-            {/* 웨딩홀 정보 */}
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-text-primary text-sm mb-2">
-                📍 {venueInfo.name}
-              </h4>
-              <p className="text-text-secondary text-xs leading-relaxed mb-2">
-                {venueInfo.address}
-              </p>
-              <p className="text-text-secondary text-xs">
-                📞 {venueInfo.phone}
-              </p>
             </div>
           </div>
         </DialogContent>
