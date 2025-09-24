@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface NaverMapProps {
   venueName: string;
@@ -19,15 +19,19 @@ const NaverMap: React.FC<NaverMapProps> = ({
 }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const mapRef = useRef<unknown>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   // 카카오맵 내비 공유 함수
   const handleKakaoNavi = () => {
     if (typeof window !== "undefined") {
-      window.open("https://kko.kakao.com/OXftsQIo4C", "_blank");
+      window.open("https://kko.kakao.com/ikjQWC0Mmj", "_blank");
     }
   };
 
   useEffect(() => {
+    setIsClient(true);
+
     // 네이버 맵 API가 로드될 때까지 대기
     const initializeMap = () => {
       if (typeof window === "undefined") return;
@@ -45,23 +49,27 @@ const NaverMap: React.FC<NaverMapProps> = ({
       const naverMaps = (window.naver as any).maps;
       const mapOptions = {
         center: new naverMaps.LatLng(latitude, longitude),
-        zoom: 16,
+        zoom: 17,
         mapTypeControl: false,
         scaleControl: false,
         logoControl: false,
         mapDataControl: false,
         zoomControl: false,
+        draggable: false,
+        scrollWheel: false,
       };
 
       // 지도 인스턴스 생성
       mapRef.current = new naverMaps.Map(mapElement.current, mapOptions);
 
       // 마커 생성
-      const marker = new naverMaps.Marker({
+      new naverMaps.Marker({
         position: new naverMaps.LatLng(latitude, longitude),
         map: mapRef.current,
         title: venueName,
       });
+
+      setIsMapLoaded(true);
     };
 
     // 네이버 맵 API 로드 확인
@@ -94,7 +102,7 @@ const NaverMap: React.FC<NaverMapProps> = ({
       />
 
       {/* 로딩 상태 */}
-      {typeof window !== "undefined" && !window.naver && (
+      {isClient && !isMapLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-rose-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>

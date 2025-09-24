@@ -66,7 +66,9 @@ export default function MoneyGift() {
 
   const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      // 하이픈(-)을 제거한 계좌번호로 복사
+      const accountWithoutHyphen = text.replace(/-/g, "");
+      await navigator.clipboard.writeText(accountWithoutHyphen);
       setCopiedAccount(text);
       setTimeout(() => setCopiedAccount(null), 2000);
     } catch (err) {

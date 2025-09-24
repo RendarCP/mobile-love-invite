@@ -5,10 +5,14 @@ interface WeddingCalendarProps {
 }
 
 export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
-  // 실시간 업데이트를 위한 useEffect
+  // 클라이언트 사이드에서만 시간 업데이트
   useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -39,8 +43,10 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
     });
   }
 
-  // D-day 계산 (실시간)
-  const timeDiff = weddingDate.getTime() - currentTime.getTime();
+  // D-day 계산 (클라이언트에서만)
+  const timeDiff = currentTime
+    ? weddingDate.getTime() - currentTime.getTime()
+    : 0;
   const daysUntil = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
   const hoursUntil = Math.floor(
     (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -108,42 +114,52 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
 
       {/* D-day 카운터 */}
       <div className="text-center">
-        <div className="grid grid-cols-4 gap-4 mb-4" suppressHydrationWarning>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-rose-primary">
-              {Math.abs(daysUntil)}
+        {isClient ? (
+          <>
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-rose-primary">
+                  {Math.abs(daysUntil)}
+                </div>
+                <div className="text-xs text-text-secondary">DAYS</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-rose-primary">
+                  {Math.abs(hoursUntil)}
+                </div>
+                <div className="text-xs text-text-secondary">HOURS</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-rose-primary">
+                  {Math.abs(minutesUntil)}
+                </div>
+                <div className="text-xs text-text-secondary">MIN</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-rose-primary">
+                  {Math.abs(secondsUntil)}
+                </div>
+                <div className="text-xs text-text-secondary">SEC</div>
+              </div>
             </div>
-            <div className="text-xs text-text-secondary">DAYS</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-rose-primary">
-              {Math.abs(hoursUntil)}
-            </div>
-            <div className="text-xs text-text-secondary">HOURS</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-rose-primary">
-              {Math.abs(minutesUntil)}
-            </div>
-            <div className="text-xs text-text-secondary">MIN</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-rose-primary">
-              {Math.abs(secondsUntil)}
-            </div>
-            <div className="text-xs text-text-secondary">SEC</div>
-          </div>
-        </div>
 
-        <div className="text-center" suppressHydrationWarning>
-          <p className="text-text-secondary text-sm">
-            성욱 ♥ 회진의 결혼식이{" "}
-            <span className="text-rose-primary font-medium">
-              {Math.abs(daysUntil)}일
-            </span>{" "}
-            남았습니다.
-          </p>
-        </div>
+            <div className="text-center">
+              <p className="text-text-secondary text-sm">
+                성욱 ♥ 회진의 결혼식이{" "}
+                <span className="text-rose-primary font-medium">
+                  {Math.abs(daysUntil)}일
+                </span>{" "}
+                남았습니다.
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="text-center">
+            <p className="text-text-secondary text-sm">
+              성욱 ♥ 회진의 결혼식까지 카운트다운을 불러오는 중...
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

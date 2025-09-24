@@ -198,7 +198,7 @@ export default function PhotoUpload() {
   };
 
   return (
-    <section className="px-6 py-8 bg-cream-primary/20">
+    <section className="px-6 py-8 ">
       <div className="max-w-md mx-auto">
         {/* 섹션 헤더 */}
         <div className="text-center mb-6">
