@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 interface NaverMapProps {
   venueName: string;
@@ -22,11 +23,48 @@ const NaverMap: React.FC<NaverMapProps> = ({
   const [isClient, setIsClient] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-  // 카카오맵 내비 공유 함수
+  // 모바일 디바이스 감지 유틸 함수
+  const isMobile = () =>
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
+  // 카카오맵 길찾기: 카카오 SDK 사용 (모바일) → 실패 시 웹 링크 폴백
   const handleKakaoNavi = () => {
-    if (typeof window !== "undefined") {
-      window.open("https://kko.kakao.com/ikjQWC0Mmj", "_blank");
+    if (typeof window === "undefined") return;
+
+    console.log("kakaoWebUrl venueName", venueName);
+    // 1) 웹 폴백용 (앱 없거나 PC일 때)
+    const kakaoWebUrl = `https://map.kakao.com/link/to/${encodeURIComponent(
+      venueName
+    )},${latitude},${longitude}`;
+
+    // 2) 모바일에서 카카오 SDK 사용
+    if (isMobile()) {
+      // 카카오 SDK가 로드되었는지 확인
+      if (window.Kakao && window.Kakao.Navi) {
+        try {
+          window.Kakao.Navi.share({
+            name: venueName,
+            x: longitude,
+            y: latitude,
+            coordType: "wgs84",
+          });
+          return;
+        } catch (error) {
+          console.warn("카카오 내비 실행 실패, 웹으로 폴백:", error);
+        }
+      } else {
+        console.warn("카카오 SDK가 로드되지 않음, 웹으로 폴백");
+      }
+
+      // SDK 실패 시 웹으로 폴백
+      window.location.href = kakaoWebUrl;
+      return;
     }
+
+    // PC는 웹으로
+    window.open(kakaoWebUrl, "_blank");
   };
 
   useEffect(() => {
@@ -114,9 +152,6 @@ const NaverMap: React.FC<NaverMapProps> = ({
       {/* 지도 하단 정보 */}
       <div className="mt-3 p-3 bg-gray-50 rounded-lg">
         <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0 w-8 h-8 bg-rose-primary rounded-full flex items-center justify-center">
-            <span className="text-white text-sm">🏛️</span>
-          </div>
           <div className="flex-1">
             <h4 className="font-medium text-text-primary text-sm mb-1">
               {venueName}
@@ -140,15 +175,29 @@ const NaverMap: React.FC<NaverMapProps> = ({
                 );
               }
             }}
-            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-1"
           >
-            네이버지도
+            <Image
+              src="/images/naverMap.png"
+              alt="네이버지도"
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+            <span>네이버지도</span>
           </button>
           <button
             onClick={handleKakaoNavi}
-            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-1"
           >
-            카카오맵
+            <Image
+              src="/images/kakaoNavi.png"
+              alt="카카오내비"
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+            <span>카카오내비</span>
           </button>
           <button
             onClick={() => {
@@ -171,9 +220,16 @@ const NaverMap: React.FC<NaverMapProps> = ({
                 }
               }
             }}
-            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex-1 bg-white border border-gray-200 text-text-primary text-xs py-2 px-3 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-1"
           >
-            티맵
+            <Image
+              src="/images/tmap.png"
+              alt="티맵"
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+            <span>티맵</span>
           </button>
         </div>
       </div>

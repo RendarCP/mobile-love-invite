@@ -187,6 +187,25 @@ export default function PhotoUpload() {
 
   // 모달 열기
   const openModal = () => {
+    // 개발 환경에서는 조건 무시
+    const isDevelopment = process.env.NODE_ENV === "development";
+
+    if (!isDevelopment) {
+      // 현재 날짜가 2025년 12월 27일 이전인지 확인
+      const currentDate = new Date();
+      const weddingDate = new Date("2025-12-27");
+
+      if (currentDate < weddingDate) {
+        const daysLeft = Math.ceil(
+          (weddingDate.getTime() - currentDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+        alert(
+          `사진 업로드는 결혼식 이후(2025년 12월 27일)부터 가능합니다.\n${daysLeft}일 후에 업로드해 주세요.`
+        );
+        return;
+      }
+    }
     setIsModalOpen(true);
     setPreviewPhotos([]);
   };
@@ -203,7 +222,7 @@ export default function PhotoUpload() {
         {/* 섹션 헤더 */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
-            <Camera className="w-8 h-8 text-rose-primary/70" />
+            <Camera className="w-8 h-8 text-wedding-primary/70" />
           </div>
           <h2 className="text-xl font-medium text-text-primary mb-2">
             스냅사진 올리기
@@ -218,24 +237,44 @@ export default function PhotoUpload() {
         {/* 업로드 모달 트리거 버튼 */}
         <div className="text-center mb-6">
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button
-                onClick={openModal}
-                className="bg-rose-primary hover:bg-rose-primary/90 text-white px-8 py-3 rounded-full transition-all duration-200 hover:scale-105 shadow-lg"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                사진 업로드하기
-              </Button>
-            </DialogTrigger>
+            <Button
+              onClick={openModal}
+              size="sm"
+              className="bg-wedding-primary hover:bg-wedding-primary/90 text-white px-8 py-3 rounded-full transition-all duration-200 hover:scale-105 shadow-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              사진 업로드하기
+            </Button>
 
             <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-center text-lg font-medium text-text-primary">
-                  📸 스냅사진 업로드
-                </DialogTitle>
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-lg font-medium text-text-primary">
+                    사진 업로드
+                  </DialogTitle>
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
               </DialogHeader>
 
               <div className="space-y-4">
+                {/* 감성적인 문구들 */}
+                <div className="text-center space-y-2 py-4">
+                  <p className="text-wedding-primary text-sm font-medium">
+                    "저희의 특별한 순간을 담아주셨다면, 함께 공유해주세요."
+                  </p>
+                  <p className="text-text-secondary text-xs">
+                    "예쁜 사진을 올려주시면 큰 추억이 됩니다."
+                  </p>
+                  <p className="text-text-secondary text-xs">
+                    "함께한 순간을 사진으로 나눠주세요."
+                  </p>
+                </div>
+
                 {/* 파일 선택 영역 */}
                 <Card className="border-2 border-dashed border-rose-primary/30 bg-white hover:border-rose-primary/50 transition-all duration-300">
                   <CardContent className="p-6">
@@ -255,8 +294,9 @@ export default function PhotoUpload() {
                         </div>
 
                         <Button
+                          size="sm"
                           onClick={handleFileSelectClick}
-                          className="bg-rose-primary hover:bg-rose-secondary text-white"
+                          className="bg-wedding-primary hover:bg-wedding-secondary text-white"
                         >
                           <Image className="w-4 h-4 mr-2" />
                           사진 선택하기
@@ -276,11 +316,11 @@ export default function PhotoUpload() {
                 {previewPhotos.length > 0 && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-center space-x-2">
-                      <Heart className="w-4 h-4 text-rose-primary" />
+                      <Heart className="w-4 h-4 text-wedding-primary" />
                       <span className="text-sm text-text-secondary">
                         선택된 사진 {previewPhotos.length}장
                       </span>
-                      <Heart className="w-4 h-4 text-rose-primary" />
+                      <Heart className="w-4 h-4 text-wedding-primary" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto">
@@ -294,7 +334,7 @@ export default function PhotoUpload() {
                           }}
                         >
                           <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative">
-                            <img
+                            <Image
                               src={photo.preview}
                               alt={`선택된 사진 ${index + 1}`}
                               className={`w-full h-full object-cover transition-all duration-300 ${
@@ -339,6 +379,7 @@ export default function PhotoUpload() {
                 {/* 업로드 버튼 */}
                 <div className="flex space-x-3 pt-4">
                   <Button
+                    size="sm"
                     onClick={closeModal}
                     className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
                     disabled={isUploading}
@@ -346,9 +387,10 @@ export default function PhotoUpload() {
                     취소
                   </Button>
                   <Button
+                    size="sm"
                     onClick={handleUpload}
                     disabled={previewPhotos.length === 0 || isUploading}
-                    className="flex-1 bg-rose-primary hover:bg-rose-primary/90 text-white relative overflow-hidden"
+                    className="flex-1 bg-wedding-primary hover:bg-wedding-primary/90 text-white relative overflow-hidden"
                   >
                     {isUploading ? (
                       <>
@@ -388,9 +430,7 @@ export default function PhotoUpload() {
         {/* 안내 메시지 */}
         <div className="mt-6 text-center">
           <p className="text-xs text-text-secondary/70">
-            💡 사진 업로드 후 2026.10.24 12:30부터
-            <br />
-            업로드 가능합니다.
+            💡 사진 업로드는 2025.12.27 12:30부터 업로드 가능합니다.
           </p>
         </div>
       </div>

@@ -92,7 +92,7 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
                   h-8 w-8 flex items-center justify-center text-sm rounded-full mx-auto
                   ${
                     isWeddingDay
-                      ? "bg-rose-primary text-white font-bold shadow-lg"
+                      ? "bg-wedding-primary text-white font-bold shadow-lg"
                       : dateObj.isCurrentMonth
                       ? `text-text-primary hover:bg-gray-100 ${
                           isWeekend
@@ -118,25 +118,25 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
           <>
             <div className="grid grid-cols-4 gap-4 mb-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-rose-primary">
+                <div className="text-2xl font-bold text-wedding-primary">
                   {Math.abs(daysUntil)}
                 </div>
                 <div className="text-xs text-text-secondary">DAYS</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-rose-primary">
+                <div className="text-2xl font-bold text-wedding-primary">
                   {Math.abs(hoursUntil)}
                 </div>
                 <div className="text-xs text-text-secondary">HOURS</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-rose-primary">
+                <div className="text-2xl font-bold text-wedding-primary">
                   {Math.abs(minutesUntil)}
                 </div>
                 <div className="text-xs text-text-secondary">MIN</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-rose-primary">
+                <div className="text-2xl font-bold text-wedding-primary">
                   {Math.abs(secondsUntil)}
                 </div>
                 <div className="text-xs text-text-secondary">SEC</div>
@@ -146,7 +146,7 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
             <div className="text-center">
               <p className="text-text-secondary text-sm">
                 성욱 ♥ 회진의 결혼식이{" "}
-                <span className="text-rose-primary font-medium">
+                <span className="text-wedding-primary font-bold">
                   {Math.abs(daysUntil)}일
                 </span>{" "}
                 남았습니다.

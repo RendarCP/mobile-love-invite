@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface Photo {
   id: number;
@@ -187,9 +188,11 @@ export default function PhotoGallery() {
               className="relative overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
               onClick={() => openModal(displayedPhotos[0], 0)}
             >
-              <img
+              <Image
                 src={displayedPhotos[0].src}
                 alt={displayedPhotos[0].alt}
+                width={300}
+                height={200}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 onError={(e) => {
@@ -208,9 +211,11 @@ export default function PhotoGallery() {
                 className="relative overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
                 onClick={() => openModal(photo, index + 1)}
               >
-                <img
+                <Image
                   src={photo.src}
                   alt={photo.alt}
+                  width={150}
+                  height={100}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                   onError={(e) => {
@@ -233,9 +238,11 @@ export default function PhotoGallery() {
                 className="relative overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
                 onClick={() => openModal(photo, index + 3)}
               >
-                <img
+                <Image
                   src={photo.src}
                   alt={photo.alt}
+                  width={150}
+                  height={100}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                   onError={(e) => {
@@ -253,9 +260,11 @@ export default function PhotoGallery() {
               className="relative overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
               onClick={() => openModal(displayedPhotos[5], 5)}
             >
-              <img
+              <Image
                 src={displayedPhotos[5].src}
                 alt={displayedPhotos[5].alt}
+                width={300}
+                height={200}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 onError={(e) => {
@@ -276,9 +285,11 @@ export default function PhotoGallery() {
                 className="relative overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
                 onClick={() => openModal(photo, index + 6)}
               >
-                <img
+                <Image
                   src={photo.src}
                   alt={photo.alt}
+                  width={100}
+                  height={75}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                   onError={(e) => {
@@ -297,7 +308,8 @@ export default function PhotoGallery() {
         <div className="text-center">
           <Button
             onClick={() => setShowAll(true)}
-            className="rounded-full px-8 py-2 bg-rose-primary hover:bg-rose-secondary text-white"
+            size="sm"
+            className="rounded-full px-2 py-1 bg-wedding-primary hover:bg-wedding-secondary text-white"
           >
             사진 더 보기
           </Button>
@@ -308,6 +320,7 @@ export default function PhotoGallery() {
       {selectedPhoto && (
         <Dialog open={!!selectedPhoto} onOpenChange={() => closeModal()}>
           <DialogContent className="max-w-full w-full h-full max-h-screen p-0 bg-black border-none">
+            <DialogTitle className="sr-only">사진 갤러리</DialogTitle>
             <div className="relative w-full h-full flex items-center justify-center z-100">
               {/* 사진 갯수 표시 (왼쪽 위) */}
               <div className="absolute top-6 left-6 z-50 text-white/80 text-sm font-light bg-rose-primary rounded-full px-2 py-1">
@@ -356,9 +369,11 @@ export default function PhotoGallery() {
                       : "opacity-100"
                   } transition-opacity duration-200 ease-out`}
                 >
-                  <img
+                  <Image
                     src={selectedPhoto.src}
                     alt={selectedPhoto.alt}
+                    width={800}
+                    height={600}
                     className="w-full h-full object-cover select-none"
                     draggable={false}
                   />

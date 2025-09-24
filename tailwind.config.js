@@ -20,6 +20,11 @@ export default {
         "gray-warm": "#F5F5F0",
         "text-primary": "#2D2D2D",
         "text-secondary": "#666666",
+        // 웨딩 테마 색상 추가
+        "wedding-primary": "rgb(205 177 134)",
+        "beige-primary": "rgb(205 177 134)",
+        "beige-secondary": "rgb(168 136 87)",
+        "wedding-secondary": "rgb(168 136 87)",
       },
       fontFamily: {
         // Pretendard를 기본 폰트로 설정

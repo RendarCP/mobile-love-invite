@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { X, CheckCircle } from "lucide-react";
 
 // Next.js API 라우트 사용
@@ -8,6 +8,7 @@ const submitToAPI = async (data: IAttendanceFormData) => {
   const payload = {
     side: data.side,
     name: data.name,
+    phoneLastDigits: data.phoneLastDigits,
     attendeeCount: data.attendeeCount,
     mealOption: data.mealOption,
     message: "", // 추가 메시지 필드 (필요시)
@@ -45,6 +46,8 @@ interface IAttendanceFormData {
   side: "groom" | "bride";
   /** 참석자 성함 */
   name: string;
+  /** 전화번호 뒷자리 */
+  phoneLastDigits: string;
   /** 참석 인원 수 */
   attendeeCount: number;
   /** 식사 여부 */
@@ -77,6 +80,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
   const [formData, setFormData] = useState<IAttendanceFormData>({
     side: "groom",
     name: "",
+    phoneLastDigits: "",
     attendeeCount: 1,
     mealOption: "yes",
   });
@@ -99,6 +103,11 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
     // 필수 필드 검증
     if (!formData.name.trim()) {
       alert("성함을 입력해주세요.");
+      return;
+    }
+
+    if (!formData.phoneLastDigits.trim()) {
+      alert("전화번호 뒷자리를 입력해주세요.");
       return;
     }
 
@@ -138,6 +147,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
           setFormData({
             side: "groom",
             name: "",
+            phoneLastDigits: "",
             attendeeCount: 1,
             mealOption: "yes",
           });
@@ -185,8 +195,8 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
       {/* 참석의사 전달하기 버튼 */}
       <Button
         onClick={() => setIsModalOpen(true)}
-        className="bg-rose-primary hover:bg-rose-primary/90 text-white px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
-        size="lg"
+        className="bg-wedding-primary hover:bg-wedding-primary/90 text-white px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
+        size="sm"
       >
         <CheckCircle className="w-4 h-4 mr-2" />
         참석의사 전달하기
@@ -195,6 +205,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
       {/* 참석의사 전달 모달 */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
         <DialogContent className="max-w-sm mx-auto p-0 bg-white rounded-lg overflow-hidden">
+          <DialogTitle className="sr-only">참석의사 전달</DialogTitle>
           {/* 성공 화면 */}
           {isSubmitted ? (
             <div className="p-8 text-center">
@@ -237,7 +248,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                       onClick={() => handleFormChange("side", "groom")}
                       className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                         formData.side === "groom"
-                          ? "bg-blue-500 text-white"
+                          ? "bg-wedding-primary text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
@@ -248,7 +259,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                       onClick={() => handleFormChange("side", "bride")}
                       className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                         formData.side === "bride"
-                          ? "bg-rose-primary text-white"
+                          ? "bg-wedding-primary text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
@@ -267,13 +278,34 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                     value={formData.name}
                     onChange={(e) => handleFormChange("name", e.target.value)}
                     placeholder="참석 대표자의 성함을 입력해주세요"
-                    className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-primary/20 focus:border-rose-primary"
+                    className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-primary/20 focus:border-wedding-primary"
                     required
                   />
                 </div>
 
-                {/* 참석인원 */}
+                {/* 전화번호 뒷자리 */}
                 <div>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    전화번호 뒷자리
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.phoneLastDigits}
+                    onChange={(e) =>
+                      handleFormChange("phoneLastDigits", e.target.value)
+                    }
+                    placeholder="예: 1234"
+                    maxLength={4}
+                    className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-primary/20 focus:border-wedding-primary"
+                    required
+                  />
+                  <p className="text-xs text-text-secondary mt-1">
+                    중복여부 체크를 위해 전화번호 뒷자리 4자리를 입력해주세요
+                  </p>
+                </div>
+
+                {/* 참석인원 */}
+                {/* <div>
                   <label className="block text-sm font-medium text-text-primary mb-2">
                     참석인원
                   </label>
@@ -306,37 +338,32 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                       +
                     </button>
                   </div>
-                </div>
+                </div> */}
 
                 {/* 식사여부 */}
                 <div>
                   <label className="block text-sm font-medium text-text-primary mb-2">
-                    식사여부
+                    참석여부
                   </label>
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {[
-                      { value: "yes", label: "예정" },
-                      { value: "no", label: "안함" },
-                      { value: "undecided", label: "미정" },
+                      { value: "yes", label: "참석하겠습니다" },
+                      { value: "no", label: "참석이 어렵습니다" },
                     ].map((option) => (
-                      <label
+                      <button
                         key={option.value}
-                        className="flex items-center space-x-3 cursor-pointer"
+                        type="button"
+                        onClick={() =>
+                          handleFormChange("mealOption", option.value)
+                        }
+                        className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                          formData.mealOption === option.value
+                            ? `bg-wedding-primary text-white`
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
                       >
-                        <input
-                          type="radio"
-                          name="mealOption"
-                          value={option.value}
-                          checked={formData.mealOption === option.value}
-                          onChange={(e) =>
-                            handleFormChange("mealOption", e.target.value)
-                          }
-                          className="w-4 h-4 text-rose-primary border-gray-300 focus:ring-rose-primary/20"
-                        />
-                        <span className="text-sm text-text-secondary">
-                          {option.label}
-                        </span>
-                      </label>
+                        {option.label}
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -345,8 +372,9 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                 <div className="pt-4">
                   <Button
                     type="submit"
+                    size="md"
                     disabled={isSubmitting}
-                    className="w-full bg-rose-primary hover:bg-rose-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+                    className="w-full bg-wedding-primary hover:bg-wedding-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                   >
                     {isSubmitting ? (
                       <>
