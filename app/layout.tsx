@@ -6,8 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "성욱 ♥ 회진 결혼식에 초대합니다",
-  description:
-    "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
+  description: "성욱 ❤︎ 회진",
   keywords: "결혼식, 청첩장, 성욱, 회진, 2025, 상록아트홀",
   authors: [{ name: "성욱 & 회진" }],
   icons: {
@@ -17,8 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "성욱 ♥ 회진 결혼식에 초대합니다",
-    description:
-      "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
+    description: "성욱 ❤︎ 회진",
     images: [
       {
         url: "/images/KSC03250_s-1.jpg",
@@ -33,8 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "성욱 ♥ 회진 결혼식에 초대합니다",
-    description:
-      "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
+    description: "성욱 ❤︎ 회진",
     images: ["/images/KSC03250_s-1.jpg"],
   },
 };
