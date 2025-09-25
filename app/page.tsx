@@ -538,7 +538,7 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-md mx-auto px-6">
           {/* 메인 텍스트 */}
           <div className="mb-8 text-center">
-            <p className="text-white text-lg font-bold tracking-wide drop-shadow-lg">
+            <p className="text-white text-2xl font-bold tracking-wide drop-shadow-lg font-point">
               감사합니다
             </p>
             {/* <p className="text-base text-white font-bold tracking-wide drop-shadow-lg">
@@ -598,6 +598,9 @@ export default function HomePage() {
               <span>카카오톡으로 초대장 보내기</span>
             </button>
           </div>
+        </div>
+        <div className="text-center text-xs text-text-secondary py-5 font-point">
+          기획: 성욱, 회진 - 개발: 성욱
         </div>
       </footer>
 

@@ -308,13 +308,13 @@ export default function PhotoGallery() {
               {/* 닫기 버튼 (오른쪽 위) */}
               <button
                 onClick={closeModal}
-                className="absolute top-6 right-6 z-50 text-gray-500 hover:text-gray-300 transition-colors duration-200 p-1 outline-none focus:outline-none focus-visible:outline-none"
+                className="absolute top-2 right-2 z-50 text-gray-500 hover:text-gray-300 transition-colors duration-200 p-1 outline-none focus:outline-none focus-visible:outline-none"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* 하단 컨트롤 영역 */}
-              <div className="absolute bottom-10 left-0 right-0 z-50 flex items-center justify-between px-6">
+              <div className="absolute bottom-0 left-0 right-0 z-50 flex items-center justify-between px-6">
                 {/* 이전 버튼 */}
                 <button
                   onClick={goToPrevious}
