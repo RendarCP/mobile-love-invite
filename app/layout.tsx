@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import "./index.css";
 import Script from "next/script";
+import { Toaster } from "@/components/ui/toaster";
 // import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+    process.env.NEXT_PUBLIC_BASE_URL ||
+      "https://seongwook-hoejin-wedding-invitation.vercel.app"
   ),
   title: "성욱 ♥ 회진 결혼식에 초대합니다",
   description:
@@ -13,9 +15,9 @@ export const metadata: Metadata = {
   keywords: "결혼식, 청첩장, 성욱, 회진, 2025, 상록아트홀",
   authors: [{ name: "성욱 & 회진" }],
   icons: {
-    icon: "/images/intro-flower01.png",
-    shortcut: "/images/intro-flower01.png",
-    apple: "/images/intro-flower01.png",
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
   },
   openGraph: {
     title: "성욱 ♥ 회진 결혼식에 초대합니다",
@@ -52,6 +54,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         {children}
+        <Toaster />
       </body>
     </html>
   );

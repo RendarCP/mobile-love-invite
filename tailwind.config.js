@@ -105,5 +105,13 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        ".text-shadow": {
+          textShadow: "2px 2px 6px rgb(178,211,222)",
+        },
+      });
+    },
+  ],
 };

@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useToast } from "@/components/ui/use-toast";
 
 interface AccountInfo {
   relation: string;
@@ -63,16 +64,35 @@ const brideAccounts: AccountInfo[] = [
 
 export default function MoneyGift() {
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (
+    text: string,
+    bankName: string,
+    accountHolder: string
+  ) => {
     try {
       // 하이픈(-)을 제거한 계좌번호로 복사
       const accountWithoutHyphen = text.replace(/-/g, "");
       await navigator.clipboard.writeText(accountWithoutHyphen);
       setCopiedAccount(text);
       setTimeout(() => setCopiedAccount(null), 2000);
+
+      // 토스트 알림 표시
+      toast({
+        variant: "default",
+        title: "계좌번호가 복사되었습니다! 💕",
+        description: `${bankName} ${accountHolder}님 계좌번호가 클립보드에 복사되었습니다.`,
+        duration: 2000,
+      });
     } catch (err) {
       console.error("Failed to copy: ", err);
+      toast({
+        variant: "default",
+        title: "복사 실패",
+        description: "계좌번호 복사에 실패했습니다. 다시 시도해주세요.",
+        duration: 2000,
+      });
     }
   };
 
@@ -90,8 +110,10 @@ export default function MoneyGift() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => copyToClipboard(account.account)}
-          className="p-2 h-auto text-gray-600 hover:bg-gray-100 transition-all duration-200 hover:scale-110"
+          onClick={() =>
+            copyToClipboard(account.account, account.bank, account.name)
+          }
+          className="p-2 h-auto text-wedding-primary hover:bg-gray-100 transition-all duration-200 hover:scale-110"
         >
           {copiedAccount === account.account ? (
             <Check className="w-4 h-4 text-green-500 animate-bounce" />
@@ -106,7 +128,7 @@ export default function MoneyGift() {
       <div className="flex items-center justify-between">
         <span className="text-gray-600 text-sm">{account.name}</span>
         {account.kakaopay && (
-          <div className="bg-rose-primary text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
+          <div className="bg-wedding-primary text-white text-xs px-2 py-1 rounded font-bold animate-pulse">
             💳 pay
           </div>
         )}
@@ -126,7 +148,7 @@ export default function MoneyGift() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem
                 value="groom"
-                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-rose-primary/50"
+                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-wedding-primary/50"
               >
                 <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200 group">
                   <span className=" transition-colors duration-200">
@@ -152,7 +174,7 @@ export default function MoneyGift() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem
                 value="bride"
-                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-rose-primary/50"
+                className="border border-gray-200 rounded-lg bg-gray-100 transition-all duration-300 hover:shadow-lg hover:border-wedding-primary/50"
               >
                 <AccordionTrigger className="px-4 py-3 text-gray-700 hover:no-underline transition-all duration-200  group">
                   <span className="transition-colors duration-200">

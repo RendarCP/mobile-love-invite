@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 interface PreviewPhoto {
@@ -18,19 +17,11 @@ interface PreviewPhoto {
   uploadProgress?: number;
 }
 
-interface UploadedPhoto {
-  id: string;
-  file: File;
-  preview: string;
-  uploadedAt: Date;
-}
-
 /**
  * 스냅사진 업로드 컴포넌트 (모달 형식)
  * 결혼식 사진을 업로드하고 메시지를 남길 수 있는 공간
  */
 export default function PhotoUpload() {
-  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
   const [previewPhotos, setPreviewPhotos] = useState<PreviewPhoto[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -93,7 +84,7 @@ export default function PhotoUpload() {
 
     try {
       // 개별 사진 업로드 처리
-      const uploadPromises = previewPhotos.map(async (photo, index) => {
+      const uploadPromises = previewPhotos.map(async (photo) => {
         // 업로드 시작 시뮬레이션
         setPreviewPhotos((prev) =>
           prev.map((p) =>
@@ -147,7 +138,6 @@ export default function PhotoUpload() {
       // 업로드 완료 후 잠시 대기
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      setUploadedPhotos((prev) => [...prev, ...newUploadedPhotos]);
       setPreviewPhotos([]);
       setIsModalOpen(false);
 
@@ -168,13 +158,6 @@ export default function PhotoUpload() {
     }
   };
 
-  // 업로드된 사진 삭제
-  const removeUploadedPhoto = (id: string) => {
-    if (confirm("이 사진을 삭제하시겠습니까?")) {
-      setUploadedPhotos((prev) => prev.filter((photo) => photo.id !== id));
-    }
-  };
-
   // 미리보기 사진 삭제
   const removePreviewPhoto = (id: string) => {
     setPreviewPhotos((prev) => prev.filter((photo) => photo.id !== id));
@@ -191,18 +174,26 @@ export default function PhotoUpload() {
     const isDevelopment = process.env.NODE_ENV === "development";
 
     if (!isDevelopment) {
-      // 현재 날짜가 2025년 12월 27일 이전인지 확인
+      // 현재 날짜가 2025년 12월 27일 12시 30분 이전인지 확인
       const currentDate = new Date();
-      const weddingDate = new Date("2025-12-27");
+      const weddingDateTime = new Date("2025-12-27T12:30:00");
 
-      if (currentDate < weddingDate) {
-        const daysLeft = Math.ceil(
-          (weddingDate.getTime() - currentDate.getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-        alert(
-          `사진 업로드는 결혼식 이후(2025년 12월 27일)부터 가능합니다.\n${daysLeft}일 후에 업로드해 주세요.`
-        );
+      if (currentDate < weddingDateTime) {
+        const timeLeft = weddingDateTime.getTime() - currentDate.getTime();
+        const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+        const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
+
+        let message = `사진 업로드는 결혼식 이후(2025년 12월 27일 12시 30분)부터 가능합니다.\n`;
+
+        if (daysLeft > 1) {
+          message += `${daysLeft}일 후에 업로드해 주세요.`;
+        } else if (hoursLeft > 1) {
+          message += `${hoursLeft}시간 후에 업로드해 주세요.`;
+        } else {
+          message += `곧 업로드가 가능합니다.`;
+        }
+
+        alert(message);
         return;
       }
     }
@@ -224,7 +215,7 @@ export default function PhotoUpload() {
           <div className="flex justify-center mb-3">
             <Camera className="w-8 h-8 text-wedding-primary/70" />
           </div>
-          <h2 className="text-xl font-medium text-text-primary mb-2">
+          <h2 className="text-xl font-bold text-text-primary mb-2">
             스냅사진 올리기
           </h2>
           <p className="text-text-secondary text-sm leading-relaxed">
@@ -240,7 +231,7 @@ export default function PhotoUpload() {
             <Button
               onClick={openModal}
               size="sm"
-              className="bg-wedding-primary hover:bg-wedding-primary/90 text-white px-8 py-3 rounded-full transition-all duration-200 hover:scale-105 shadow-lg"
+              className="bg-wedding-primary hover:bg-wedding-primary/90 text-white  rounded-full transition-all duration-200 hover:scale-105 shadow-lg"
             >
               <Plus className="w-5 h-5 mr-2" />
               사진 업로드하기
@@ -265,13 +256,14 @@ export default function PhotoUpload() {
                 {/* 감성적인 문구들 */}
                 <div className="text-center space-y-2 py-4">
                   <p className="text-wedding-primary text-sm font-medium">
-                    "저희의 특별한 순간을 담아주셨다면, 함께 공유해주세요."
+                    &ldquo;저희의 특별한 순간을 담아주셨다면, 함께
+                    공유해주세요.&rdquo;
                   </p>
                   <p className="text-text-secondary text-xs">
-                    "예쁜 사진을 올려주시면 큰 추억이 됩니다."
+                    &ldquo;예쁜 사진을 올려주시면 큰 추억이 됩니다.&rdquo;
                   </p>
                   <p className="text-text-secondary text-xs">
-                    "함께한 순간을 사진으로 나눠주세요."
+                    &ldquo;함께한 순간을 사진으로 나눠주세요.&rdquo;
                   </p>
                 </div>
 

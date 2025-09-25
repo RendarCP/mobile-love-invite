@@ -178,7 +178,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
         <p className="text-xs text-text-secondary/60 tracking-widest mb-2">
           R.S.V.P.
         </p>
-        <h3 className="text-lg font-medium text-text-primary mb-4">
+        <h3 className="text-lg font-bold text-text-primary mb-4">
           참석 의사 전달
         </h3>
       </div>
@@ -195,7 +195,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
       {/* 참석의사 전달하기 버튼 */}
       <Button
         onClick={() => setIsModalOpen(true)}
-        className="bg-wedding-primary hover:bg-wedding-primary/90 text-white px-8 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
+        className="bg-wedding-primary hover:bg-wedding-primary/90 text-white rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
         size="sm"
       >
         <CheckCircle className="w-4 h-4 mr-2" />
@@ -372,7 +372,7 @@ const AttendanceCheck: React.FC<IAttendanceCheckProps> = ({
                 <div className="pt-4">
                   <Button
                     type="submit"
-                    size="md"
+                    size="sm"
                     disabled={isSubmitting}
                     className="w-full bg-wedding-primary hover:bg-wedding-primary/90 text-white py-3 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                   >
