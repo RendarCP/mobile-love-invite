@@ -73,7 +73,7 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
         <h2 className="text-lg font-medium text-text-primary mb-2">
           2025.12.27
         </h2>
-        <p className="text-text-secondary text-sm">토요일 오후 1시 30분</p>
+        <p className="text-text-secondary text-sm">토요일 오후 3시 20분</p>
       </div>
 
       {/* 달력 그리드 */}
