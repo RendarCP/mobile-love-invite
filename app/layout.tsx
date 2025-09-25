@@ -5,10 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 // import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL ||
-      "https://seongwook-hoejin-wedding-invitation.vercel.app"
-  ),
   title: "성욱 ♥ 회진 결혼식에 초대합니다",
   description:
     "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
