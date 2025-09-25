@@ -23,8 +23,23 @@ export const metadata: Metadata = {
     title: "성욱 ♥ 회진 결혼식에 초대합니다",
     description:
       "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
-    images: ["/images/KSC03250_s-1.jpg"],
+    images: [
+      {
+        url: "/images/KSC03250_s-1.jpg",
+        width: 1200,
+        height: 630,
+        alt: "성욱과 회진의 결혼식 청첩장",
+      },
+    ],
     type: "website",
+    siteName: "성욱 ♥ 회진 결혼식",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "성욱 ♥ 회진 결혼식에 초대합니다",
+    description:
+      "2025년 12월 27일 상록아트홀에서 열리는 성욱과 회진의 결혼식에 초대합니다.",
+    images: ["/images/KSC03250_s-1.jpg"],
   },
 };
 
