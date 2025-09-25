@@ -163,7 +163,7 @@ export default function HomePage() {
         {/* 배경 이미지 */}
         <div className="absolute inset-0">
           <Image
-            src="/images/KSC03250_s-1.jpg"
+            src="/images/wedding.webp"
             alt="웨딩 커버 사진"
             width={400}
             height={600}
@@ -200,16 +200,16 @@ export default function HomePage() {
         {/* 중앙 날짜 */}
         <div
           id="center-text"
-          className="absolute inset-0 flex items-center justify-center z-20"
+          className="absolute left-[45%] top-[15%]  flex items-center justify-center z-20"
         >
           <div className="text-center">
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider drop-shadow-2xl mb-3 opacity-0 date-slide-from-left date-delay-1">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider drop-shadow-2xl mb-3 opacity-0 date-slide-from-left date-delay-1 text-shadow">
               25
             </div>
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-3 opacity-0 date-slide-from-right date-delay-2">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-3 opacity-0 date-slide-from-right date-delay-2 text-shadow">
               12
             </div>
-            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-3 opacity-0 date-slide-from-left date-delay-3">
+            <div className="text-white text-7xl font-partial font-light leading-none tracking-wider -mt-6 drop-shadow-2xl mb-3 opacity-0 date-slide-from-left date-delay-3 text-shadow">
               27
             </div>
           </div>
@@ -252,29 +252,28 @@ export default function HomePage() {
           <p className="text-xs text-text-secondary/60 tracking-widest mb-2">
             INVITATION
           </p>
-          <h3 className="text-lg font-medium text-text-primary mb-4">
+          <h3 className="text-lg font-bold text-text-primary mb-4">
             소중한 분들을 초대합니다
           </h3>
         </div>
 
         {/* 하단 인사말 */}
-        <div className="text-text-secondary leading-relaxed space-y-3 text-sm">
+        <div className="text-text-secondary leading-relaxed space-y-3 text-[13px] font-point">
           <p>
-            살랑하는 바람결에
+            함박눈 고운 겨울날,
             <br />
-            사랑이 묻어나는 계절입니다.
+            저희 두 사람이 서로의 마음에 깊은 <br />
+            <span className="text-wedding-primary">사랑</span>의 언약을하려
+            합니다.
           </p>
           <p>
-            여기 곱고 예쁜 두 사람이{" "}
-            <span className="text-wedding-primary">사랑</span>을 맺어
-            <br />
-            인생의 반려자가 되려 합니다.
+            <span className="text-wedding-primary">기쁨</span>이든{" "}
+            <span className="text-wedding-primary">슬픔</span>이든 평생을 함께
+            하며 <br /> 나눌 소중한 사랑.
           </p>
           <p>
-            새 인생을 시작하는 이 자리에 오셔서
-            <br />
-            <span className="text-wedding-primary">축복</span>해 주시면
-            감사하겠습니다.
+            <span className="text-wedding-primary">축복</span>과 격려를
+            전해주시면 더없는 <br /> 기쁨이겠습니다.
           </p>
         </div>
       </section>
@@ -351,7 +350,7 @@ export default function HomePage() {
           locationAnimation.isVisible ? "animate" : ""
         }`}
       >
-        <h2 className="text-xl font-medium text-text-primary text-center mb-6">
+        <h2 className="text-xl font-bold text-text-primary text-center mb-6">
           오시는 길
         </h2>
 
@@ -434,7 +433,7 @@ export default function HomePage() {
           giftAnimation.isVisible ? "animate" : ""
         }`}
       >
-        <h2 className="text-xl font-medium text-text-primary text-center mb-6">
+        <h2 className="text-xl font-bold text-text-primary text-center mb-6">
           마음 전하는 곳
         </h2>
         <div className="text-center">
@@ -461,7 +460,7 @@ export default function HomePage() {
       <div
         className="relative mobile-viewport-fix bg-cover bg-center bg-no-repeat text-gray-700 text-center flex items-center justify-center"
         style={{
-          backgroundImage: "url('/images/KSC03250_s-1.jpg')",
+          backgroundImage: "url('/images/hanok.webp')",
           backgroundAttachment: "scroll",
           transform: "translateZ(0)",
           willChange: "auto",
@@ -539,12 +538,12 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-md mx-auto px-6">
           {/* 메인 텍스트 */}
           <div className="mb-8 text-center">
-            <p className="text-white text-lg mb-6 font-bold tracking-wide drop-shadow-lg">
+            <p className="text-white text-lg font-bold tracking-wide drop-shadow-lg">
               감사합니다
             </p>
-            <p className="text-base text-white font-bold tracking-wide drop-shadow-lg">
+            {/* <p className="text-base text-white font-bold tracking-wide drop-shadow-lg">
               2025.12.27
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
