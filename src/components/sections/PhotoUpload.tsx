@@ -8,6 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
+import NextImage from "next/image";
 
 interface PreviewPhoto {
   id: string;
@@ -26,6 +28,7 @@ export default function PhotoUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   // 파일 선택 처리 (미리보기용)
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,17 +36,21 @@ export default function PhotoUpload() {
     if (!files) return;
 
     Array.from(files).forEach((file) => {
-      // 이미지 파일만 허용
-      if (!file.type.startsWith("image/")) {
-        alert("이미지 파일만 업로드 가능합니다.");
+      // 이미지 및 동영상 파일만 허용
+      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+        toast({
+          title: "파일 형식 오류",
+          description: "이미지 및 동영상 파일만 업로드 가능합니다.",
+          variant: "destructive",
+        });
         return;
       }
 
-      // 파일 크기 제한 (5MB)
-      if (file.size > 10 * 1024 * 1024) {
-        alert("파일 크기는 5MB 이하로 제한됩니다.");
-        return;
-      }
+      // // 파일 크기 제한 (1GB)
+      // if (file.size > 10 * 1024 * 1024) {
+      //   alert("파일 크기는 10MB 이하로 제한됩니다.");
+      //   return;
+      // }
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -67,7 +74,11 @@ export default function PhotoUpload() {
   // 실제 업로드 처리
   const handleUpload = async () => {
     if (previewPhotos.length === 0) {
-      alert("업로드할 사진을 선택해주세요.");
+      toast({
+        title: "파일 선택 필요",
+        description: "업로드할 파일을 선택해주세요.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -141,7 +152,11 @@ export default function PhotoUpload() {
       setPreviewPhotos([]);
       setIsModalOpen(false);
 
-      alert(`${newUploadedPhotos.length}장의 사진이 업로드되었습니다!`);
+      // toast({
+      //   title: "업로드 완료",
+      //   description: `${newUploadedPhotos.length}개의 파일이 업로드되었습니다!`,
+      // });
+      alert(`${newUploadedPhotos.length}개의 파일이 업로드되었습니다!`);
     } catch (error) {
       // 오류 발생 시 업로드 상태 초기화
       setPreviewPhotos((prev) =>
@@ -151,6 +166,11 @@ export default function PhotoUpload() {
           uploadProgress: 0,
         }))
       );
+      // toast({
+      //   title: "업로드 실패",
+      //   description: "업로드 중 오류가 발생했습니다. 다시 시도해주세요.",
+      //   variant: "destructive",
+      // });
       alert("업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
       console.error("Upload error:", error);
     } finally {
@@ -174,23 +194,23 @@ export default function PhotoUpload() {
     const isDevelopment = process.env.NODE_ENV === "development";
 
     if (!isDevelopment) {
-      // 현재 날짜가 2025년 12월 27일 12시 30분 이전인지 확인
+      // 현재 날짜가 2025년 12월 27일 15시 30분 이전인지 확인
       const currentDate = new Date();
-      const weddingDateTime = new Date("2025-12-27T12:30:00");
+      const weddingDateTime = new Date("2025-12-27T14:30:00");
 
       if (currentDate < weddingDateTime) {
         const timeLeft = weddingDateTime.getTime() - currentDate.getTime();
         const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
         const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
 
-        let message = `사진 업로드는 결혼식 이후(2025년 12월 27일 12시 30분)부터 가능합니다.\n`;
+        let message = `사진 업로드는 결혼식 이후(2025년 12월 27일 14시 30분)부터 가능합니다.`;
 
         if (daysLeft > 1) {
-          message += `${daysLeft}일 후에 업로드해 주세요.`;
+          message += ` ${daysLeft}일 후에 업로드해 주세요.`;
         } else if (hoursLeft > 1) {
-          message += `${hoursLeft}시간 후에 업로드해 주세요.`;
+          message += ` ${hoursLeft}시간 후에 업로드해 주세요.`;
         } else {
-          message += `곧 업로드가 가능합니다.`;
+          message += ` 곧 업로드가 가능합니다.`;
         }
 
         alert(message);
@@ -256,14 +276,13 @@ export default function PhotoUpload() {
                 {/* 감성적인 문구들 */}
                 <div className="text-center space-y-2 py-4">
                   <p className="text-wedding-primary text-sm font-medium">
-                    &ldquo;저희의 특별한 순간을 담아주셨다면, 함께
-                    공유해주세요.&rdquo;
+                    저희의 특별한 순간을 담아주셨다면, 함께 공유해주세요.
                   </p>
                   <p className="text-text-secondary text-xs">
-                    &ldquo;예쁜 사진을 올려주시면 큰 추억이 됩니다.&rdquo;
+                    예쁜 사진을 올려주시면 큰 추억이 됩니다.
                   </p>
                   <p className="text-text-secondary text-xs">
-                    &ldquo;함께한 순간을 사진으로 나눠주세요.&rdquo;
+                    함께한 순간을 사진으로 나눠주세요.
                   </p>
                 </div>
 
@@ -274,7 +293,7 @@ export default function PhotoUpload() {
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/*,video/*"
                         multiple
                         onChange={handleFileSelect}
                         className="hidden"
@@ -282,7 +301,10 @@ export default function PhotoUpload() {
 
                       <div className="mb-4">
                         <div className="w-16 h-16 mx-auto bg-rose-primary/10 rounded-full flex items-center justify-center mb-3">
-                          <Image className="w-8 h-8 text-rose-primary/70" />
+                          <Image
+                            className="w-8 h-8 text-rose-primary/70"
+                            aria-label="파일 업로드 아이콘"
+                          />
                         </div>
 
                         <Button
@@ -290,15 +312,18 @@ export default function PhotoUpload() {
                           onClick={handleFileSelectClick}
                           className="bg-wedding-primary hover:bg-wedding-secondary text-white"
                         >
-                          <Image className="w-4 h-4 mr-2" />
-                          사진 선택하기
+                          <Image
+                            className="w-4 h-4 mr-2"
+                            aria-label="파일 선택 아이콘"
+                          />
+                          사진/동영상 선택하기
                         </Button>
                       </div>
 
                       <p className="text-xs text-text-secondary">
-                        JPG, PNG 파일 (최대 10MB)
+                        이미지, 동영상 파일
                         <br />
-                        여러 장 동시 선택 가능
+                        여러 파일 동시 선택 가능
                       </p>
                     </div>
                   </CardContent>
@@ -310,7 +335,7 @@ export default function PhotoUpload() {
                     <div className="flex items-center justify-center space-x-2">
                       <Heart className="w-4 h-4 text-wedding-primary" />
                       <span className="text-sm text-text-secondary">
-                        선택된 사진 {previewPhotos.length}장
+                        선택된 파일 {previewPhotos.length}개
                       </span>
                       <Heart className="w-4 h-4 text-wedding-primary" />
                     </div>
@@ -326,13 +351,26 @@ export default function PhotoUpload() {
                           }}
                         >
                           <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative">
-                            <img
-                              src={photo.preview}
-                              alt={`선택된 사진 ${index + 1}`}
-                              className={`w-full h-full object-cover transition-all duration-300 ${
-                                photo.isUploading ? "opacity-50" : ""
-                              }`}
-                            />
+                            {photo.file.type.startsWith("video/") ? (
+                              <video
+                                src={photo.preview}
+                                className={`w-full h-full object-cover transition-all duration-300 ${
+                                  photo.isUploading ? "opacity-50" : ""
+                                }`}
+                                muted
+                                loop
+                                playsInline
+                              />
+                            ) : (
+                              <NextImage
+                                src={photo.preview}
+                                alt={`선택된 파일 ${index + 1}`}
+                                fill
+                                className={`object-cover transition-all duration-300 ${
+                                  photo.isUploading ? "opacity-50" : ""
+                                }`}
+                              />
+                            )}
 
                             {/* 업로드 진행률 오버레이 */}
                             {photo.isUploading && (

@@ -558,9 +558,8 @@ export default function HomePage() {
                   window.Kakao.Share.sendDefault({
                     objectType: "feed",
                     content: {
-                      title: "성욱 ♥ 회진 결혼식에 초대합니다",
-                      description:
-                        "2025년 12월 27일\n여러분의 축복 속에서 새로운 시작을 하려 합니다.",
+                      title: "2025년 12월 27일",
+                      description: "성욱 ♥ 회진 결혼식에 초대합니다",
                       imageUrl:
                         window.location.origin + "/images/KSC03250_s-1.jpg",
                       link: {
