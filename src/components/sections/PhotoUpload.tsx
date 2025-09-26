@@ -460,7 +460,7 @@ export default function PhotoUpload() {
         {/* 안내 메시지 */}
         <div className="mt-6 text-center">
           <p className="text-xs text-text-secondary/70">
-            💡 사진 업로드는 2025.12.27 12:30부터 업로드 가능합니다.
+            💡 사진 업로드는 2025.12.27 14:30부터 업로드 가능합니다.
           </p>
         </div>
       </div>
