@@ -13,8 +13,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       primary: "btn-primary",
       secondary: "btn-secondary",
       outline:
-        "border-2 border-rose-primary text-rose-secondary bg-transparent hover:bg-rose-primary hover:text-white",
-      ghost: "text-rose-secondary hover:bg-rose-primary/10",
+        "border-2 border-wedding-primary text-wedding-secondary bg-transparent hover:bg-wedding-primary hover:text-white",
+      ghost: "text-wedding-secondary hover:bg-wedding-primary/10",
     };
 
     const sizes = {
@@ -26,7 +26,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          "touch-target inline-flex items-center justify-center rounded-full font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "touch-target inline-flex items-center justify-center rounded-full font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wedding-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           variants[variant],
           sizes[size],
           className
