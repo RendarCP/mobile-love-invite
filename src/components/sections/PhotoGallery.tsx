@@ -66,9 +66,6 @@ export default function PhotoGallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
-    null
-  );
 
   const openModal = (photo: Photo, index: number) => {
     setSelectedPhoto(photo);
@@ -83,36 +80,26 @@ export default function PhotoGallery() {
     if (isTransitioning) return;
 
     setIsTransitioning(true);
-    setSlideDirection("right");
+    const newIndex = currentIndex > 0 ? currentIndex - 1 : photos.length - 1;
 
     setTimeout(() => {
-      const newIndex = currentIndex > 0 ? currentIndex - 1 : photos.length - 1;
       setCurrentIndex(newIndex);
       setSelectedPhoto(photos[newIndex]);
-
-      setTimeout(() => {
-        setSlideDirection(null);
-        setIsTransitioning(false);
-      }, 50);
-    }, 150);
+      setIsTransitioning(false);
+    }, 200);
   }, [isTransitioning, currentIndex]);
 
   const goToNext = useCallback(() => {
     if (isTransitioning) return;
 
     setIsTransitioning(true);
-    setSlideDirection("left");
+    const newIndex = currentIndex < photos.length - 1 ? currentIndex + 1 : 0;
 
     setTimeout(() => {
-      const newIndex = currentIndex < photos.length - 1 ? currentIndex + 1 : 0;
       setCurrentIndex(newIndex);
       setSelectedPhoto(photos[newIndex]);
-
-      setTimeout(() => {
-        setSlideDirection(null);
-        setIsTransitioning(false);
-      }, 50);
-    }, 150);
+      setIsTransitioning(false);
+    }, 200);
   }, [isTransitioning, currentIndex]);
 
   // 터치/스와이프 지원
@@ -299,18 +286,18 @@ export default function PhotoGallery() {
         )}
       </div>
 
-      {/* 사진 모달 */}
+      {/* 사진 모달 - 간단한 슬라이드 */}
       {selectedPhoto && (
         <Dialog open={!!selectedPhoto} onOpenChange={() => closeModal()}>
-          <DialogContent className="max-w-full w-full h-full max-h-screen p-0 bg-black border-none">
+          <DialogContent className="max-w-full w-full h-full max-h-screen px-0 py-4 bg-black border-none">
             <DialogTitle className="sr-only">사진 갤러리</DialogTitle>
-            <div className="relative w-full h-full flex items-center justify-center z-100">
+            <div className="relative w-full h-full flex items-center justify-center">
               {/* 닫기 버튼 (오른쪽 위) */}
               <button
                 onClick={closeModal}
-                className="absolute top-2 right-2 z-50 text-gray-500 hover:text-gray-300 transition-colors duration-200 p-1 outline-none focus:outline-none focus-visible:outline-none"
+                className="absolute top-2 right-2 z-50 text-black hover:text-gray-300 transition-colors duration-200 p-1 outline-none focus:outline-none focus-visible:outline-none"
               >
-                <X className="w-5 h-5" />
+                <X className="w-7 h-7" />
               </button>
 
               {/* 하단 컨트롤 영역 */}
@@ -318,26 +305,26 @@ export default function PhotoGallery() {
                 {/* 이전 버튼 */}
                 <button
                   onClick={goToPrevious}
-                  className="text-white/70 hover:text-white transition-colors duration-200 p-2 bg-black/20 rounded-full backdrop-blur-sm outline-none focus:outline-none focus-visible:outline-none"
+                  className="text-black/70  transition-colors duration-200 p-2 rounded-full outline-none focus:outline-none focus-visible:outline-none"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeft className="w-7 h-7" />
                 </button>
 
                 {/* 사진 갯수 표시 */}
-                <div className="text-gray-500/80 text-sm font-light rounded-full px-3 py-1">
+                <div className="text-black/80 text-md font-light rounded-full px-3 py-1">
                   {currentIndex + 1} / {photos.length}
                 </div>
 
                 {/* 다음 버튼 */}
                 <button
                   onClick={goToNext}
-                  className="text-white/70 hover:text-white transition-colors duration-200 p-2 bg-black/20 rounded-full backdrop-blur-sm outline-none focus:outline-none focus-visible:outline-none"
+                  className="text-black/70  transition-colors duration-200 p-2 rounded-full outline-none focus:outline-none focus-visible:outline-none"
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  <ChevronRight className="w-7 h-7" />
                 </button>
               </div>
 
-              {/* 이미지 - 슬라이드 효과와 함께 꽉차게 표시 */}
+              {/* 이미지 - 부드러운 페이드 효과 */}
               <div
                 className="w-full h-full flex items-center justify-center overflow-hidden"
                 onTouchStart={onTouchStart}
@@ -345,15 +332,11 @@ export default function PhotoGallery() {
                 onTouchEnd={onTouchEnd}
               >
                 <div
-                  className={`w-full h-full ${
-                    slideDirection === "left"
-                      ? "slide-exit-left"
-                      : slideDirection === "right"
-                      ? "slide-exit-right"
-                      : isTransitioning
-                      ? "opacity-0"
-                      : "opacity-100"
-                  } transition-opacity duration-200 ease-out`}
+                  className={`w-full h-full transition-all duration-300 ease-in-out ${
+                    isTransitioning
+                      ? "opacity-0 scale-95"
+                      : "opacity-100 scale-100"
+                  }`}
                 >
                   <Image
                     src={selectedPhoto.src}
@@ -362,6 +345,7 @@ export default function PhotoGallery() {
                     height={600}
                     className="w-full h-full object-contain select-none"
                     draggable={false}
+                    priority
                   />
                 </div>
               </div>
