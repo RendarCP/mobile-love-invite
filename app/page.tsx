@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Heart, Car, Train, Bus, X } from "lucide-react";
+import { Heart, Car, Train, Bus, X, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import MoneyGift from "@/components/sections/MoneyGift";
@@ -406,9 +406,10 @@ export default function HomePage() {
         <div id="map-button" className="mt-6 text-center">
           <Button
             size="sm"
-            className="bg-wedding-primary"
+            className="bg-wedding-primary hover:bg-wedding-primary/90 text-white rounded-full text-sm font-medium transition-all duration-200 hover:scale-105"
             onClick={() => setIsMapModalOpen(true)}
           >
+            <MapPin className="w-4 h-4 mr-2" />
             지도 보기
           </Button>
         </div>
@@ -598,8 +599,10 @@ export default function HomePage() {
             </button>
           </div>
         </div>
-        <div className="text-center text-xs text-text-secondary py-5 font-point">
-          기획: 성욱, 회진 - 개발: 성욱
+        <div className="text-center text-[10px] text-text-secondary py-5 font-point">
+          © 2025 Seongwook & Hoejin Wedding Invitation
+          <br />
+          Crafted by Seongwook
         </div>
       </footer>
 

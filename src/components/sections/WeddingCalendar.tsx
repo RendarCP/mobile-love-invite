@@ -112,7 +112,7 @@ export default function WeddingCalendar({ weddingDate }: WeddingCalendarProps) {
                     isWeddingDay
                       ? "bg-wedding-primary text-white font-bold shadow-lg"
                       : dateObj.isCurrentMonth
-                      ? `text-text-primary hover:bg-gray-100 ${
+                      ? `text-text-primary ${
                           isWeekend ? "text-gray-400 opacity-60" : ""
                         }`
                       : "text-transparent"

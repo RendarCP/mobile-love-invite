@@ -1,5 +1,15 @@
 import { useState, useRef } from "react";
-import { Camera, Upload, X, Heart, Image, Plus } from "lucide-react";
+import {
+  Camera,
+  Upload,
+  X,
+  Heart,
+  Image,
+  Plus,
+  Play,
+  Check,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -17,6 +27,7 @@ interface PreviewPhoto {
   preview: string;
   isUploading?: boolean;
   uploadProgress?: number;
+  isUploaded?: boolean;
 }
 
 /**
@@ -30,12 +41,40 @@ export default function PhotoUpload() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  // 비디오 썸네일 생성
+  const createVideoThumbnail = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      video.src = URL.createObjectURL(file);
+      video.currentTime = 1; // 1초 지점의 프레임
+
+      video.onloadeddata = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const thumbnail = canvas.toDataURL("image/jpeg", 0.8);
+        URL.revokeObjectURL(video.src);
+        resolve(thumbnail);
+      };
+
+      video.onerror = () => {
+        // 비디오 로드 실패 시 기본 이미지 사용
+        resolve("");
+      };
+    });
+  };
+
   // 파일 선택 처리 (미리보기용)
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files) return;
 
-    Array.from(files).forEach((file) => {
+    for (const file of Array.from(files)) {
       // 이미지 및 동영상 파일만 허용
       if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
         toast({
@@ -43,27 +82,31 @@ export default function PhotoUpload() {
           description: "이미지 및 동영상 파일만 업로드 가능합니다.",
           variant: "destructive",
         });
-        return;
+        continue;
       }
 
-      // // 파일 크기 제한 (1GB)
-      // if (file.size > 10 * 1024 * 1024) {
-      //   alert("파일 크기는 10MB 이하로 제한됩니다.");
-      //   return;
-      // }
+      let preview: string;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const newPhoto: PreviewPhoto = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          file,
-          preview: e.target?.result as string,
-        };
+      if (file.type.startsWith("video/")) {
+        // 비디오의 경우 썸네일 생성
+        preview = await createVideoThumbnail(file);
+      } else {
+        // 이미지의 경우 기존 방식
+        const reader = new FileReader();
+        preview = await new Promise<string>((resolve) => {
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(file);
+        });
+      }
 
-        setPreviewPhotos((prev) => [...prev, newPhoto]);
+      const newPhoto: PreviewPhoto = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        file,
+        preview,
       };
-      reader.readAsDataURL(file);
-    });
+
+      setPreviewPhotos((prev) => [...prev, newPhoto]);
+    }
 
     // input 초기화
     if (fileInputRef.current) {
@@ -96,22 +139,20 @@ export default function PhotoUpload() {
     try {
       // 개별 사진 업로드 처리
       const uploadPromises = previewPhotos.map(async (photo) => {
-        // 업로드 시작 시뮬레이션
+        // 업로드 시작
         setPreviewPhotos((prev) =>
-          prev.map((p) =>
-            p.id === photo.id ? { ...p, uploadProgress: 10 } : p
-          )
+          prev.map((p) => (p.id === photo.id ? { ...p, uploadProgress: 5 } : p))
         );
 
         const formData = new FormData();
-        formData.append("name", "게스트"); // 기본값, 필요시 입력 필드 추가
-        formData.append("message", "결혼식 축하사진"); // 기본값, 필요시 입력 필드 추가
+        formData.append("name", "게스트");
+        formData.append("message", "결혼식 축하사진");
         formData.append("photo", photo.file);
 
-        // 진행률 시뮬레이션
+        // FormData 준비 완료
         setPreviewPhotos((prev) =>
           prev.map((p) =>
-            p.id === photo.id ? { ...p, uploadProgress: 30 } : p
+            p.id === photo.id ? { ...p, uploadProgress: 20 } : p
           )
         );
 
@@ -120,9 +161,10 @@ export default function PhotoUpload() {
           body: formData,
         });
 
+        // 요청 완료
         setPreviewPhotos((prev) =>
           prev.map((p) =>
-            p.id === photo.id ? { ...p, uploadProgress: 70 } : p
+            p.id === photo.id ? { ...p, uploadProgress: 80 } : p
           )
         );
 
@@ -132,9 +174,12 @@ export default function PhotoUpload() {
           throw new Error(result.message || "업로드 실패");
         }
 
+        // 업로드 완료
         setPreviewPhotos((prev) =>
           prev.map((p) =>
-            p.id === photo.id ? { ...p, uploadProgress: 100 } : p
+            p.id === photo.id
+              ? { ...p, uploadProgress: 100, isUploaded: true }
+              : p
           )
         );
 
@@ -257,157 +302,157 @@ export default function PhotoUpload() {
               사진 업로드하기
             </Button>
 
-            <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
+            <DialogContent className="w-full h-full m-0 rounded-none overflow-hidden flex flex-col">
+              <DialogHeader className="flex-shrink-0 p-4">
                 <div className="flex items-center justify-between">
                   <DialogTitle className="text-lg font-medium text-text-primary">
                     사진 업로드
                   </DialogTitle>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                  >
-                    <X className="w-5 h-5 text-gray-500" />
-                  </button>
                 </div>
               </DialogHeader>
 
-              <div>
+              <div className="flex-1 flex flex-col overflow-hidden">
                 {/* 감성적인 문구들 */}
-                <div className="text-center space-y-2 py-4">
+                <div className="text-center space-y-2 py-4 flex-shrink-0">
                   <p className="text-wedding-primary text-sm font-medium">
                     저희의 특별한 순간을 담아주셨다면, 함께 공유해주세요.
                   </p>
-                  <p className="text-text-secondary text-xs">
-                    예쁜 사진을 올려주시면 큰 추억이 됩니다.
-                  </p>
-                  <p className="text-text-secondary text-xs">
-                    함께한 순간을 사진으로 나눠주세요.
+                  <p className="flex items-center justify-center text-red-500/60 text-xs font-bold">
+                    <AlertTriangle className="w-4 h-4 mr-2" />
+                    파일 첨부 이후에 업로드 버튼 꼭 눌러주세요!!
                   </p>
                 </div>
 
-                {/* 파일 선택 영역 */}
-                <Card className="border-2 border-dashed border-rose-primary/30 bg-white hover:border-rose-primary/50 transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="text-center">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*,video/*"
-                        multiple
-                        onChange={handleFileSelect}
-                        className="hidden"
-                      />
+                {/* 파일 입력 */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
 
-                      <div className="mb-4">
-                        <div className="w-16 h-16 mx-auto bg-rose-primary/10 rounded-full flex items-center justify-center mb-3">
-                          <Image
-                            className="w-8 h-8 text-rose-primary/70"
-                            aria-label="파일 업로드 아이콘"
-                          />
-                        </div>
-
-                        <Button
-                          size="sm"
-                          onClick={handleFileSelectClick}
-                          className="bg-wedding-primary hover:bg-wedding-secondary text-white"
-                        >
-                          <Image
-                            className="w-4 h-4 mr-2"
-                            aria-label="파일 선택 아이콘"
-                          />
-                          사진/동영상 선택하기
-                        </Button>
-                      </div>
-
-                      <p className="text-xs text-text-secondary">
-                        이미지, 동영상 파일
-                        <br />
-                        여러 파일 동시 선택 가능
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* 선택된 사진 미리보기 */}
-                {previewPhotos.length > 0 && (
-                  <div className="space-y-3 mt-4">
-                    <div className="flex items-center justify-center space-x-2">
-                      <Heart className="w-4 h-4 text-wedding-primary" />
-                      <span className="text-sm text-text-secondary">
-                        선택된 파일 {previewPhotos.length}개
-                      </span>
-                      <Heart className="w-4 h-4 text-wedding-primary" />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
-                      {previewPhotos.map((photo, index) => (
-                        <div
-                          key={photo.id}
-                          className="relative group animate-fade-in"
-                          style={{
-                            animationDelay: `${index * 50}ms`,
-                            animationFillMode: "both",
-                          }}
-                        >
-                          <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative">
-                            {photo.file.type.startsWith("video/") ? (
-                              <video
-                                src={photo.preview}
-                                className={`w-full h-full object-cover transition-all duration-300 ${
-                                  photo.isUploading ? "opacity-50" : ""
-                                }`}
-                                muted
-                                loop
-                                playsInline
-                              />
-                            ) : (
-                              <NextImage
-                                src={photo.preview}
-                                alt={`선택된 파일 ${index + 1}`}
-                                fill
-                                className={`object-cover transition-all duration-300 ${
-                                  photo.isUploading ? "opacity-50" : ""
-                                }`}
-                              />
-                            )}
-
-                            {/* 업로드 진행률 오버레이 */}
-                            {photo.isUploading && (
-                              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
-                                <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin mb-2"></div>
-                                <div className="text-white text-xs font-medium">
-                                  {photo.uploadProgress}%
-                                </div>
-                                <div className="w-16 h-1 bg-white/30 rounded-full mt-2 overflow-hidden">
-                                  <div
-                                    className="h-full bg-white rounded-full transition-all duration-300 ease-out"
-                                    style={{
-                                      width: `${photo.uploadProgress}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* 삭제 버튼 (업로드 중이 아닐 때만 표시) */}
-                            {!photo.isUploading && (
-                              <button
-                                onClick={() => removePreviewPhoto(photo.id)}
-                                className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-80 hover:opacity-100 transition-all duration-200 hover:scale-110"
+                {/* 메인 컨텐츠 영역 */}
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  {previewPhotos.length === 0 ? (
+                    /* 파일이 선택되지 않았을 때 - 2번 이미지 스타일 */
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="w-full h-full">
+                        <div className="flex items-center justify-center bg-gray-50 rounded-lg p-8 text-center border-2 border-dashed border-gray-200 h-full">
+                          <div className="flex flex-col items-center space-y-6">
+                            <Upload className="w-10 h-10 text-gray-300" />
+                            <div className="space-y-3">
+                              <p className="text-gray-600 text-sm font-bold">
+                                이미지, 동영상파일
+                                <br />
+                                여러 파일 동시 선택 가능
+                              </p>
+                              <Button
+                                onClick={handleFileSelectClick}
+                                className="bg-wedding-primary hover:bg-wedding-primary/20 text-white font-medium px-8 py-3 rounded-full text-base"
                               >
-                                <X className="w-3 h-3" />
-                              </button>
-                            )}
+                                사진 첨부하기
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    /* 파일이 선택되었을 때 - 1번 이미지 스타일의 그리드 */
+                    <div className="flex-1 flex flex-col space-y-4 overflow-auto">
+                      {/* 파일 그리드 - 스크롤 영역 */}
+                      <div className="flex-1 overflow-y-auto max-h-full">
+                        <div className="grid grid-cols-3 gap-3 pb-4">
+                          {/* 선택된 파일들 */}
+                          {previewPhotos.map((photo, index) => (
+                            <div
+                              key={photo.id}
+                              className="relative group animate-fade-in"
+                              style={{
+                                animationDelay: `${index * 50}ms`,
+                                animationFillMode: "both",
+                              }}
+                            >
+                              <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative">
+                                {photo.file.type.startsWith("video/") ? (
+                                  <>
+                                    <NextImage
+                                      src={photo.preview}
+                                      alt={`비디오 썸네일 ${index + 1}`}
+                                      fill
+                                      className={`object-cover transition-all duration-300 ${
+                                        photo.isUploading ? "opacity-50" : ""
+                                      }`}
+                                    />
+                                    {/* 비디오 재생 아이콘 */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <div className="w-12 h-12 bg-white/60 text-black/50 font-bold rounded-full flex items-center justify-center">
+                                        비디오
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <NextImage
+                                    src={photo.preview}
+                                    alt={`선택된 파일 ${index + 1}`}
+                                    fill
+                                    className={`object-cover transition-all duration-300 ${
+                                      photo.isUploading ? "opacity-50" : ""
+                                    }`}
+                                  />
+                                )}
 
-                {/* 업로드 버튼 */}
-                <div className="flex space-x-3 mt-4">
+                                {/* 업로드 진행률 오버레이 */}
+                                {photo.isUploading && !photo.isUploaded && (
+                                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+                                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mb-1"></div>
+                                    <div className="text-white text-xs font-medium">
+                                      {photo.uploadProgress}%
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 업로드 완료 체크 표시 */}
+                                {photo.isUploaded && (
+                                  <div className="absolute inset-0 bg-wedding-primary/40 flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                                      <Check className="w-5 h-5 text-green-500" />
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* 삭제 버튼 (업로드 중이 아닐 때만 표시) */}
+                                {!photo.isUploading && !photo.isUploaded && (
+                                  <button
+                                    onClick={() => removePreviewPhoto(photo.id)}
+                                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 text-white rounded-full flex items-center justify-center opacity-80 hover:opacity-100 transition-all duration-200"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* 추가 버튼 - 더 많은 파일을 업로드할 수 있게 */}
+                          {previewPhotos.length < 40 && (
+                            <button
+                              onClick={handleFileSelectClick}
+                              className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-all duration-200 group"
+                            >
+                              <Plus className="w-6 h-6 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 항상 표시되는 하단 버튼들 */}
+                <div className="flex space-x-2 mt-4">
                   <Button
                     size="sm"
                     onClick={closeModal}
@@ -420,7 +465,11 @@ export default function PhotoUpload() {
                     size="sm"
                     onClick={handleUpload}
                     disabled={previewPhotos.length === 0 || isUploading}
-                    className="flex-1 bg-wedding-primary hover:bg-wedding-primary/90 text-white relative overflow-hidden"
+                    className={`flex-1 relative overflow-hidden ${
+                      previewPhotos.length === 0
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-wedding-primary hover:bg-wedding-primary/90 text-white"
+                    }`}
                   >
                     {isUploading ? (
                       <>
