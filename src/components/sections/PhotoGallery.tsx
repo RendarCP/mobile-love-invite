@@ -301,7 +301,7 @@ export default function PhotoGallery() {
               </button>
 
               {/* 하단 컨트롤 영역 */}
-              <div className="absolute bottom-0 left-0 right-0 z-50 flex items-center justify-between px-6">
+              <div className="absolute bottom-10 left-0 right-0 z-50 flex items-center justify-between px-6">
                 {/* 이전 버튼 */}
                 <button
                   onClick={goToPrevious}

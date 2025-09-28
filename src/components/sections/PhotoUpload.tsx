@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+"use client";
+import { useState, useRef, Suspense } from "react";
 import {
   Camera,
   Upload,
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import NextImage from "next/image";
+import { useSearchParams } from "next/navigation";
 
 interface PreviewPhoto {
   id: string;
@@ -34,7 +36,8 @@ interface PreviewPhoto {
  * 스냅사진 업로드 컴포넌트 (모달 형식)
  * 결혼식 사진을 업로드하고 메시지를 남길 수 있는 공간
  */
-export default function PhotoUpload() {
+function PhotoUploadContent() {
+  const searchParams = useSearchParams();
   const [previewPhotos, setPreviewPhotos] = useState<PreviewPhoto[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -238,7 +241,7 @@ export default function PhotoUpload() {
     // 개발 환경에서는 조건 무시
     const isDevelopment = process.env.NODE_ENV === "development";
 
-    if (!isDevelopment) {
+    if (!isDevelopment || searchParams.get("test") === "true") {
       // 현재 날짜가 2025년 12월 27일 15시 30분 이전인지 확인
       const currentDate = new Date();
       const weddingDateTime = new Date("2025-12-27T14:30:00");
@@ -514,5 +517,16 @@ export default function PhotoUpload() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Suspense로 감싸진 PhotoUpload 컴포넌트
+ */
+export default function PhotoUpload() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PhotoUploadContent />
+    </Suspense>
   );
 }
