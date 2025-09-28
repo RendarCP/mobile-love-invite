@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+"use client";
+import { useState, useRef, Suspense } from "react";
 import {
   Camera,
   Upload,
