@@ -240,8 +240,7 @@ function PhotoUploadContent() {
   const openModal = () => {
     // 개발 환경에서는 조건 무시
     const isDevelopment = process.env.NODE_ENV === "development";
-
-    if (!isDevelopment || searchParams.get("test") === "true") {
+    if (!isDevelopment && searchParams.get("test") !== "true") {
       // 현재 날짜가 2025년 12월 27일 15시 30분 이전인지 확인
       const currentDate = new Date();
       const weddingDateTime = new Date("2025-12-27T14:30:00");
