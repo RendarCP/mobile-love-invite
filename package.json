@@ -34,7 +34,7 @@
     "@types/react-dom": "^19.1.7",
     "eslint": "^9.33.0",
     "eslint-config-next": "^15.1.0",
-    "typescript": "~5.8.3"
+    "typescript": "5.9.2"
   },
   "packageManager": "yarn@4.9.4"
 }
