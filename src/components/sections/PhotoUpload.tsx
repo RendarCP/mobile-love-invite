@@ -36,7 +36,7 @@ interface PreviewPhoto {
  * 스냅사진 업로드 컴포넌트 (모달 형식)
  * 결혼식 사진을 업로드하고 메시지를 남길 수 있는 공간
  */
-export default function PhotoUpload() {
+function PhotoUploadContent() {
   const searchParams = useSearchParams();
   const [previewPhotos, setPreviewPhotos] = useState<PreviewPhoto[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -517,5 +517,16 @@ export default function PhotoUpload() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Suspense로 감싸진 PhotoUpload 컴포넌트
+ */
+export default function PhotoUpload() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PhotoUploadContent />
+    </Suspense>
   );
 }
