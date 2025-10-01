@@ -3,6 +3,7 @@ import "./index.css";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/toaster";
 // import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "성욱 ♥ 회진 결혼식에 초대합니다",
@@ -63,6 +64,7 @@ export default function RootLayout({
       <body className="antialiased" suppressHydrationWarning>
         {children}
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
