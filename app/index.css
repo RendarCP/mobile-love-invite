@@ -86,6 +86,14 @@
     height: 100dvh;
     /* 모바일 주소창 변화에 대한 안정화 */
     overscroll-behavior: none;
+    /* 확대/축소 방지 */
+    touch-action: pan-x pan-y;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   /* 뷰포트 안정화를 위한 추가 최적화 */
@@ -95,6 +103,17 @@
     -webkit-overflow-scrolling: touch;
     /* iOS Safari 주소창 대응 */
     min-height: -webkit-fill-available;
+    /* 확대/축소 방지 추가 설정 */
+    touch-action: pan-x pan-y;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* 핀치 줌 방지 */
+    -ms-touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* 모바일 브라우저에서 뷰포트 크기 변화시 부드러운 전환 */
@@ -329,6 +348,19 @@
 }
 
 @layer utilities {
+  /* 확대/축소 방지 유틸리티 */
+  .no-zoom {
+    touch-action: pan-x pan-y;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -ms-touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* 모바일 주소창 대응 유틸리티 */
   .h-screen-mobile {
     height: 100vh;
