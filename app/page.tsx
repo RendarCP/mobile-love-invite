@@ -315,6 +315,7 @@ export default function HomePage() {
                 WebkitUserSelect: "none",
                 WebkitTouchCallout: "none",
                 WebkitTapHighlightColor: "transparent",
+                pointerEvents: "none",
               }}
             />
           </div>
