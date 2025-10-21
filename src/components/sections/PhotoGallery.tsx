@@ -176,10 +176,17 @@ export default function PhotoGallery() {
                 alt={photos[0].alt}
                 width={300}
                 height={200}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                 loading="lazy"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
+                }}
+                style={{
+                  WebkitUserSelect: "none",
+                  WebkitTouchCallout: "none",
+                  WebkitTapHighlightColor: "transparent",
                 }}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300" />
@@ -199,10 +206,17 @@ export default function PhotoGallery() {
                   alt={photo.alt}
                   width={150}
                   height={100}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                   loading="lazy"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
+                  }}
+                  style={{
+                    WebkitUserSelect: "none",
+                    WebkitTouchCallout: "none",
+                    WebkitTapHighlightColor: "transparent",
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300" />
@@ -226,10 +240,17 @@ export default function PhotoGallery() {
                   alt={photo.alt}
                   width={150}
                   height={100}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                   loading="lazy"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
+                  }}
+                  style={{
+                    WebkitUserSelect: "none",
+                    WebkitTouchCallout: "none",
+                    WebkitTapHighlightColor: "transparent",
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300" />
@@ -248,10 +269,17 @@ export default function PhotoGallery() {
                 alt={photos[5].alt}
                 width={300}
                 height={200}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                 loading="lazy"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
+                }}
+                style={{
+                  WebkitUserSelect: "none",
+                  WebkitTouchCallout: "none",
+                  WebkitTapHighlightColor: "transparent",
                 }}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300" />
@@ -273,10 +301,17 @@ export default function PhotoGallery() {
                   alt={photo.alt}
                   width={100}
                   height={75}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                   loading="lazy"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
+                  }}
+                  style={{
+                    WebkitUserSelect: "none",
+                    WebkitTouchCallout: "none",
+                    WebkitTapHighlightColor: "transparent",
                   }}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300" />
@@ -330,6 +365,12 @@ export default function PhotoGallery() {
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
+                onContextMenu={(e) => e.preventDefault()}
+                style={{
+                  WebkitUserSelect: "none",
+                  WebkitTouchCallout: "none",
+                  WebkitTapHighlightColor: "transparent",
+                }}
               >
                 <div
                   className={`w-full h-full transition-all duration-300 ease-in-out ${
@@ -337,6 +378,11 @@ export default function PhotoGallery() {
                       ? "opacity-0 scale-95"
                       : "opacity-100 scale-100"
                   }`}
+                  style={{
+                    WebkitUserSelect: "none",
+                    WebkitTouchCallout: "none",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
                 >
                   <Image
                     src={selectedPhoto.src}
@@ -346,6 +392,13 @@ export default function PhotoGallery() {
                     className="w-full h-full object-contain select-none"
                     draggable={false}
                     priority
+                    onContextMenu={(e) => e.preventDefault()}
+                    style={{
+                      WebkitUserSelect: "none",
+                      WebkitTouchCallout: "none",
+                      WebkitTapHighlightColor: "transparent",
+                      pointerEvents: "none",
+                    }}
                   />
                 </div>
               </div>
