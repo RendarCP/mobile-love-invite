@@ -167,9 +167,11 @@ export default function HomePage() {
             alt="웨딩 커버 사진"
             width={400}
             height={600}
-            className="w-full h-full object-cover image-mask"
+            className="w-full h-full object-cover image-mask select-none"
             loading="eager"
             decoding="async"
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
             style={{
               width: "100%",
               WebkitMaskImage: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)`,
@@ -179,6 +181,9 @@ export default function HomePage() {
               transform: "translateZ(0)",
               willChange: "auto",
               backfaceVisibility: "hidden",
+              WebkitUserSelect: "none",
+              WebkitTouchCallout: "none",
+              WebkitTapHighlightColor: "transparent",
             }}
           />
         </div>
@@ -303,7 +308,14 @@ export default function HomePage() {
               alt="웨딩 메인 사진"
               width={400}
               height={208}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover select-none"
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+              style={{
+                WebkitUserSelect: "none",
+                WebkitTouchCallout: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
             />
           </div>
         </div>
@@ -371,7 +383,7 @@ export default function HomePage() {
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">지하철</h4>
               <p className="text-text-secondary text-sm">
-                2호선, 수인분당선 "선릉역" 5번 출구 도보 5분
+                2호선, 수인분당선 &ldquo;선릉역&rdquo; 5번 출구 도보 5분
                 <br />
                 셔틀버스: 선릉역 5번 출구에서 운행
               </p>
@@ -396,8 +408,8 @@ export default function HomePage() {
             <div className="flex-1">
               <h4 className="font-medium text-text-primary text-sm">자동차</h4>
               <p className="text-text-secondary text-sm">
-                네비게이션 "서울상록회관" <br />
-                또는 "서울시 강남구 언주로 508" 입력
+                네비게이션 &ldquo;서울상록회관&rdquo; <br />
+                또는 &ldquo;서울시 강남구 언주로 508&rdquo; 입력
               </p>
             </div>
           </div>
@@ -592,7 +604,14 @@ export default function HomePage() {
                   alt="카카오톡"
                   width={16}
                   height={16}
-                  className="w-4 h-4"
+                  className="w-4 h-4 select-none"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
+                  style={{
+                    WebkitUserSelect: "none",
+                    WebkitTouchCallout: "none",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
                 />
               </span>
               <span>카카오톡으로 초대장 보내기</span>
@@ -630,8 +649,16 @@ export default function HomePage() {
                 width={400}
                 height={300}
                 priority
-                className="w-full h-auto rounded-lg"
-                style={{ maxHeight: "80vh", objectFit: "contain" }}
+                className="w-full h-auto rounded-lg select-none"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+                style={{
+                  maxHeight: "80vh",
+                  objectFit: "contain",
+                  WebkitUserSelect: "none",
+                  WebkitTouchCallout: "none",
+                  WebkitTapHighlightColor: "transparent",
+                }}
               />
             </div>
           </div>
