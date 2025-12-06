@@ -16,6 +16,12 @@ const nextConfig = {
     domains: ["localhost"],
     unoptimized: true,
   },
+  // API 라우트 body 크기 제한 설정
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
+  },
   // 정적 파일 서빙을 위한 설정
   async rewrites() {
     return [

@@ -19,6 +19,18 @@ const serviceAccountAuth = new JWT({
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
+// API Route 설정: body 크기 제한 해제 및 타임아웃 설정
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "50mb", // 50MB로 제한 증가
+    },
+    responseLimit: false,
+  },
+};
+
+export const maxDuration = 60; // 60초 타임아웃
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
