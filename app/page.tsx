@@ -10,6 +10,7 @@ import PhotoGallery from "@/components/sections/PhotoGallery";
 import NaverMap from "@/components/sections/NaverMap";
 import PhotoUpload from "@/components/sections/PhotoUpload";
 import AttendanceCheck from "@/components/sections/AttendanceCheck";
+import MobileContainer from "@/components/MobileContainer";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import Image from "next/image";
 
@@ -151,10 +152,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div
-      className="max-w-md mx-auto bg-white shadow-lg min-h-screen-mobile"
-      suppressHydrationWarning
-    >
+    <MobileContainer>
       {/* 최상단 커버 섹션 - 이미지 스타일 */}
       <section
         className="relative overflow-hidden"
@@ -674,6 +672,6 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </MobileContainer>
   );
 }
