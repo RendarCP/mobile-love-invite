@@ -412,6 +412,15 @@ export default function HomePage() {
                 네비게이션 &ldquo;서울상록회관&rdquo; <br />
                 또는 &ldquo;서울시 강남구 언주로 508&rdquo; 입력
               </p>
+              <p className="text-text-secondary text-sm leading-relaxed">
+                동시 950대 주차 가능
+                <br />
+                • 입차 시 자동 등록, 1시간 30분 무료
+                <br />
+                • 이후 30분 1,700원
+                <br />
+                &nbsp;&nbsp;(1층, L층 주차 사전정산기 이용)
+              </p>
             </div>
           </div>
         </div>
