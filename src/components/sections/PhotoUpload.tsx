@@ -117,7 +117,7 @@ function PhotoUploadContent() {
     }
   };
 
-  // 실제 업로드 처리
+  // 실제 업로드 처리 (클라이언트 직접 GCS 업로드)
   const handleUpload = async () => {
     if (previewPhotos.length === 0) {
       toast({
@@ -142,57 +142,116 @@ function PhotoUploadContent() {
     try {
       // 개별 사진 업로드 처리
       const uploadPromises = previewPhotos.map(async (photo) => {
-        // 업로드 시작
-        setPreviewPhotos((prev) =>
-          prev.map((p) => (p.id === photo.id ? { ...p, uploadProgress: 5 } : p))
-        );
+        try {
+          // 1단계: Signed URL 생성 요청 (10%)
+          setPreviewPhotos((prev) =>
+            prev.map((p) =>
+              p.id === photo.id ? { ...p, uploadProgress: 10 } : p
+            )
+          );
 
-        const formData = new FormData();
-        formData.append("name", "게스트");
-        formData.append("message", "결혼식 축하사진");
-        formData.append("photo", photo.file);
+          const urlResponse = await fetch("/api/generate-upload-url", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fileName: photo.file.name,
+              contentType: photo.file.type,
+            }),
+          });
 
-        // FormData 준비 완료
-        setPreviewPhotos((prev) =>
-          prev.map((p) =>
-            p.id === photo.id ? { ...p, uploadProgress: 20 } : p
-          )
-        );
+          if (!urlResponse.ok) {
+            throw new Error("URL 생성 실패");
+          }
 
-        const response = await fetch("/api/photo-upload", {
-          method: "POST",
-          body: formData,
-        });
+          const urlData = await urlResponse.json();
 
-        // 요청 완료
-        setPreviewPhotos((prev) =>
-          prev.map((p) =>
-            p.id === photo.id ? { ...p, uploadProgress: 80 } : p
-          )
-        );
+          if (!urlData.success) {
+            throw new Error(urlData.message || "URL 생성 실패");
+          }
 
-        const result = await response.json();
+          const { uploadUrl, readUrl, fileName } = urlData;
 
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "업로드 실패");
+          // 2단계: GCS에 직접 업로드 (30% -> 80%)
+          setPreviewPhotos((prev) =>
+            prev.map((p) =>
+              p.id === photo.id ? { ...p, uploadProgress: 30 } : p
+            )
+          );
+
+          const uploadResponse = await fetch(uploadUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": photo.file.type,
+            },
+            body: photo.file,
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error("파일 업로드 실패");
+          }
+
+          // 3단계: 메타데이터 저장 (80% -> 100%)
+          setPreviewPhotos((prev) =>
+            prev.map((p) =>
+              p.id === photo.id ? { ...p, uploadProgress: 80 } : p
+            )
+          );
+
+          const metadataResponse = await fetch("/api/save-photo-metadata", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "게스트",
+              message: "결혼식 축하사진",
+              imageUrl: readUrl,
+              fileName: fileName,
+            }),
+          });
+
+          if (!metadataResponse.ok) {
+            console.error("메타데이터 저장 실패 (파일은 업로드됨)");
+          }
+
+          // 업로드 완료
+          setPreviewPhotos((prev) =>
+            prev.map((p) =>
+              p.id === photo.id
+                ? { ...p, uploadProgress: 100, isUploaded: true }
+                : p
+            )
+          );
+
+          return {
+            ...photo,
+            uploadedAt: new Date(),
+          };
+        } catch (error) {
+          console.error(`파일 업로드 실패 (${photo.file.name}):`, error);
+          // 해당 파일만 실패 처리
+          setPreviewPhotos((prev) =>
+            prev.map((p) =>
+              p.id === photo.id
+                ? { ...p, isUploading: false, uploadProgress: 0 }
+                : p
+            )
+          );
+          throw error;
         }
-
-        // 업로드 완료
-        setPreviewPhotos((prev) =>
-          prev.map((p) =>
-            p.id === photo.id
-              ? { ...p, uploadProgress: 100, isUploaded: true }
-              : p
-          )
-        );
-
-        return {
-          ...photo,
-          uploadedAt: new Date(),
-        };
       });
 
-      const newUploadedPhotos = await Promise.all(uploadPromises);
+      const results = await Promise.allSettled(uploadPromises);
+
+      // 성공한 업로드 개수 계산
+      const successCount = results.filter(
+        (result) => result.status === "fulfilled"
+      ).length;
+      const failCount = results.filter(
+        (result) => result.status === "rejected"
+      ).length;
 
       // 업로드 완료 후 잠시 대기
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -200,13 +259,15 @@ function PhotoUploadContent() {
       setPreviewPhotos([]);
       setIsModalOpen(false);
 
-      // toast({
-      //   title: "업로드 완료",
-      //   description: `${newUploadedPhotos.length}개의 파일이 업로드되었습니다!`,
-      // });
-      alert(`${newUploadedPhotos.length}개의 파일이 업로드되었습니다!`);
+      if (failCount === 0) {
+        alert(`${successCount}개의 파일이 업로드되었습니다!`);
+      } else {
+        alert(
+          `${successCount}개 업로드 성공, ${failCount}개 실패했습니다. 실패한 파일은 다시 시도해주세요.`
+        );
+      }
     } catch (error) {
-      // 오류 발생 시 업로드 상태 초기화
+      // 전체 오류 발생 시 업로드 상태 초기화
       setPreviewPhotos((prev) =>
         prev.map((photo) => ({
           ...photo,
@@ -214,11 +275,6 @@ function PhotoUploadContent() {
           uploadProgress: 0,
         }))
       );
-      // toast({
-      //   title: "업로드 실패",
-      //   description: "업로드 중 오류가 발생했습니다. 다시 시도해주세요.",
-      //   variant: "destructive",
-      // });
       alert("업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
       console.error("Upload error:", error);
     } finally {
