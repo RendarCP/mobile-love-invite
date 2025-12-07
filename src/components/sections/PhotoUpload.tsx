@@ -1,18 +1,7 @@
 "use client";
 import { useState, useRef, Suspense } from "react";
-import {
-  Camera,
-  Upload,
-  X,
-  Heart,
-  Image,
-  Plus,
-  Play,
-  Check,
-  AlertTriangle,
-} from "lucide-react";
+import { Camera, Upload, X, Plus, Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +29,7 @@ function PhotoUploadContent() {
   const searchParams = useSearchParams();
   const [previewPhotos, setPreviewPhotos] = useState<PreviewPhoto[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isProcessingFiles, setIsProcessingFiles] = useState(false); // 파일 처리 중 상태 추가
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -77,38 +67,47 @@ function PhotoUploadContent() {
     const files = event.target.files;
     if (!files) return;
 
-    for (const file of Array.from(files)) {
-      // 이미지 및 동영상 파일만 허용
-      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
-        toast({
-          title: "파일 형식 오류",
-          description: "이미지 및 동영상 파일만 업로드 가능합니다.",
-          variant: "destructive",
-        });
-        continue;
+    setIsProcessingFiles(true); // 파일 처리 시작
+
+    try {
+      for (const file of Array.from(files)) {
+        // 이미지 및 동영상 파일만 허용
+        if (
+          !file.type.startsWith("image/") &&
+          !file.type.startsWith("video/")
+        ) {
+          toast({
+            title: "파일 형식 오류",
+            description: "이미지 및 동영상 파일만 업로드 가능합니다.",
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        let preview: string;
+
+        if (file.type.startsWith("video/")) {
+          // 비디오의 경우 썸네일 생성
+          preview = await createVideoThumbnail(file);
+        } else {
+          // 이미지의 경우 기존 방식
+          const reader = new FileReader();
+          preview = await new Promise<string>((resolve) => {
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(file);
+          });
+        }
+
+        const newPhoto: PreviewPhoto = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          file,
+          preview,
+        };
+
+        setPreviewPhotos((prev) => [...prev, newPhoto]);
       }
-
-      let preview: string;
-
-      if (file.type.startsWith("video/")) {
-        // 비디오의 경우 썸네일 생성
-        preview = await createVideoThumbnail(file);
-      } else {
-        // 이미지의 경우 기존 방식
-        const reader = new FileReader();
-        preview = await new Promise<string>((resolve) => {
-          reader.onload = (e) => resolve(e.target?.result as string);
-          reader.readAsDataURL(file);
-        });
-      }
-
-      const newPhoto: PreviewPhoto = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        file,
-        preview,
-      };
-
-      setPreviewPhotos((prev) => [...prev, newPhoto]);
+    } finally {
+      setIsProcessingFiles(false); // 파일 처리 완료
     }
 
     // input 초기화
@@ -361,6 +360,28 @@ function PhotoUploadContent() {
             </Button>
 
             <DialogContent className="w-full h-full m-0 rounded-none overflow-hidden flex flex-col">
+              {/* 파일 처리 중 로딩 오버레이 */}
+              {isProcessingFiles && (
+                <div className="absolute inset-0 bg-white/95 z-50 flex items-center justify-center">
+                  <div className="text-center space-y-4 px-8">
+                    <div className="flex justify-center">
+                      <div className="relative">
+                        <div className="w-16 h-16 border-4 border-wedding-primary/20 rounded-full"></div>
+                        <div className="absolute top-0 left-0 w-16 h-16 border-4 border-wedding-primary border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-bold text-text-primary">
+                        파일을 처리하고 있습니다
+                      </h3>
+                      <p className="text-sm text-text-secondary">
+                        잠시만 기다려주세요...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <DialogHeader className="flex-shrink-0 p-4">
                 <div className="flex items-center justify-between">
                   <DialogTitle className="text-lg font-medium text-text-primary">
@@ -515,16 +536,20 @@ function PhotoUploadContent() {
                     size="sm"
                     onClick={closeModal}
                     className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
-                    disabled={isUploading}
+                    disabled={isUploading || isProcessingFiles}
                   >
                     취소
                   </Button>
                   <Button
                     size="sm"
                     onClick={handleUpload}
-                    disabled={previewPhotos.length === 0 || isUploading}
+                    disabled={
+                      previewPhotos.length === 0 ||
+                      isUploading ||
+                      isProcessingFiles
+                    }
                     className={`flex-1 relative overflow-hidden ${
-                      previewPhotos.length === 0
+                      previewPhotos.length === 0 || isProcessingFiles
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : "bg-wedding-primary hover:bg-wedding-primary/90 text-white"
                     }`}
