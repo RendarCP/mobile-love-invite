@@ -86,48 +86,67 @@ function PhotoUploadContent() {
     });
   };
 
-  // 비디오 썸네일 생성
+  // 비디오 썸네일 생성 (최적화)
   const createVideoThumbnail = (file: File): Promise<string> => {
     return new Promise((resolve) => {
       const video = document.createElement("video");
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      video.src = URL.createObjectURL(file);
-      video.currentTime = 1; // 1초 지점의 프레임
-
-      video.onloadeddata = () => {
-        // 비디오도 압축된 썸네일 생성
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
-        let width = video.videoWidth;
-        let height = video.videoHeight;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height = (height * MAX_WIDTH) / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width = (width * MAX_HEIGHT) / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx?.drawImage(video, 0, 0, width, height);
-        const thumbnail = canvas.toDataURL("image/jpeg", 0.6);
+      // 5초 타임아웃 추가 (너무 오래 걸리면 기본 아이콘)
+      const timeout = setTimeout(() => {
         URL.revokeObjectURL(video.src);
-        resolve(thumbnail);
+        resolve(""); // 빈 문자열 반환하면 기본 비디오 아이콘 표시
+      }, 5000);
+
+      video.preload = "metadata"; // 메타데이터만 로드
+      video.muted = true; // 음소거
+      video.playsInline = true; // 인라인 재생
+      video.src = URL.createObjectURL(file);
+
+      // seeked 이벤트가 더 빠름 (loadeddata보다)
+      video.onseeked = () => {
+        clearTimeout(timeout);
+
+        try {
+          // 비디오 썸네일은 더 작게 (400x400, 성능 향상)
+          const MAX_SIZE = 400;
+          let width = video.videoWidth;
+          let height = video.videoHeight;
+
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height = (height * MAX_SIZE) / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width = (width * MAX_SIZE) / height;
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx?.drawImage(video, 0, 0, width, height);
+          const thumbnail = canvas.toDataURL("image/jpeg", 0.5); // 품질 낮춤
+          URL.revokeObjectURL(video.src);
+          resolve(thumbnail);
+        } catch (error) {
+          console.error("비디오 썸네일 생성 오류:", error);
+          URL.revokeObjectURL(video.src);
+          resolve("");
+        }
       };
 
       video.onerror = () => {
-        // 비디오 로드 실패 시 기본 이미지 사용
+        clearTimeout(timeout);
         URL.revokeObjectURL(video.src);
         resolve("");
       };
+
+      // 0.5초 지점으로 이동 (1초보다 빠름)
+      video.currentTime = 0.5;
     });
   };
 
@@ -138,53 +157,83 @@ function PhotoUploadContent() {
     const files = event.target.files;
     if (!files) return;
 
-    setIsProcessingFiles(true); // 파일 처리 시작
+    const filesArray = Array.from(files);
+
+    // 파일 형식 검증
+    const validFiles = filesArray.filter((file) => {
+      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+        toast({
+          title: "파일 형식 오류",
+          description: `${file.name}은(는) 이미지/동영상 파일이 아닙니다.`,
+          variant: "destructive",
+        });
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
+    setIsProcessingFiles(true);
 
     try {
-      for (const file of Array.from(files)) {
-        // 이미지 및 동영상 파일만 허용
-        if (
-          !file.type.startsWith("image/") &&
-          !file.type.startsWith("video/")
-        ) {
+      // 비디오 파일들은 즉시 추가 (로딩 상태로)
+      const videoFiles = validFiles.filter((file) =>
+        file.type.startsWith("video/")
+      );
+      const imageFiles = validFiles.filter((file) =>
+        file.type.startsWith("image/")
+      );
+
+      // 비디오는 즉시 추가 (썸네일은 나중에)
+      const videoPhotos = videoFiles.map((file) => ({
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        file,
+        preview: "", // 빈 문자열 = 로딩 중
+      }));
+
+      if (videoPhotos.length > 0) {
+        setPreviewPhotos((prev) => [...prev, ...videoPhotos]);
+        setIsProcessingFiles(false); // 빠르게 로딩 해제
+      }
+
+      // 이미지 파일 처리
+      for (const file of imageFiles) {
+        try {
+          const preview = await compressImage(file);
+          const newPhoto: PreviewPhoto = {
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            file,
+            preview,
+          };
+          setPreviewPhotos((prev) => [...prev, newPhoto]);
+        } catch (error) {
+          console.error("이미지 압축 실패:", error);
           toast({
-            title: "파일 형식 오류",
-            description: "이미지 및 동영상 파일만 업로드 가능합니다.",
+            title: "이미지 처리 실패",
+            description: `${file.name} 처리 중 오류가 발생했습니다.`,
             variant: "destructive",
           });
-          continue;
         }
-
-        let preview: string;
-
-        if (file.type.startsWith("video/")) {
-          // 비디오의 경우 압축된 썸네일 생성
-          preview = await createVideoThumbnail(file);
-        } else {
-          // 이미지의 경우 압축된 미리보기 생성
-          try {
-            preview = await compressImage(file);
-          } catch (error) {
-            console.error("이미지 압축 실패:", error);
-            // 압축 실패시 원본 사용 (fallback)
-            const reader = new FileReader();
-            preview = await new Promise<string>((resolve) => {
-              reader.onload = (e) => resolve(e.target?.result as string);
-              reader.readAsDataURL(file);
-            });
-          }
-        }
-
-        const newPhoto: PreviewPhoto = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          file, // 원본 파일 저장 (업로드용)
-          preview, // 압축된 미리보기
-        };
-
-        setPreviewPhotos((prev) => [...prev, newPhoto]);
       }
-    } finally {
-      setIsProcessingFiles(false); // 파일 처리 완료
+
+      // 이미지 처리 완료 후 로딩 해제
+      if (videoPhotos.length === 0) {
+        setIsProcessingFiles(false);
+      }
+
+      // 비디오 썸네일은 백그라운드에서 생성
+      videoPhotos.forEach(async (videoPhoto) => {
+        const thumbnail = await createVideoThumbnail(videoPhoto.file);
+        setPreviewPhotos((prev) =>
+          prev.map((p) =>
+            p.id === videoPhoto.id ? { ...p, preview: thumbnail } : p
+          )
+        );
+      });
+    } catch (error) {
+      console.error("파일 처리 오류:", error);
+      setIsProcessingFiles(false);
     }
 
     // input 초기화
@@ -572,17 +621,24 @@ function PhotoUploadContent() {
                               <div className="aspect-square rounded-lg overflow-hidden bg-gray-200 relative">
                                 {photo.file.type.startsWith("video/") ? (
                                   <>
-                                    <NextImage
-                                      src={photo.preview}
-                                      alt={`비디오 썸네일 ${index + 1}`}
-                                      fill
-                                      className={`object-cover transition-all duration-300 ${
-                                        photo.isUploading ? "opacity-50" : ""
-                                      }`}
-                                    />
+                                    {photo.preview ? (
+                                      <NextImage
+                                        src={photo.preview}
+                                        alt={`비디오 썸네일 ${index + 1}`}
+                                        fill
+                                        className={`object-cover transition-all duration-300 ${
+                                          photo.isUploading ? "opacity-50" : ""
+                                        }`}
+                                      />
+                                    ) : (
+                                      // 썸네일 로딩 중
+                                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                        <div className="w-8 h-8 border-2 border-wedding-primary/30 border-t-wedding-primary rounded-full animate-spin"></div>
+                                      </div>
+                                    )}
                                     {/* 비디오 재생 아이콘 */}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <div className="w-12 h-12 bg-white/60 text-black/50 font-bold rounded-full flex items-center justify-center">
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                      <div className="w-12 h-12 bg-white/70 text-black/60 font-bold rounded-full flex items-center justify-center text-xs">
                                         비디오
                                       </div>
                                     </div>
