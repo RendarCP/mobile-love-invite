@@ -14,8 +14,8 @@ import { useSearchParams } from "next/navigation";
 
 interface PreviewPhoto {
   id: string;
-  file: File;
-  preview: string;
+  file: File; // 원본 파일 (업로드용)
+  preview: string; // 압축된 미리보기 이미지
   isUploading?: boolean;
   uploadProgress?: number;
   isUploaded?: boolean;
@@ -34,6 +34,58 @@ function PhotoUploadContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  // 이미지 압축 함수 (미리보기용)
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Canvas로 이미지 리사이징 및 압축
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Canvas context not available"));
+            return;
+          }
+
+          // 최대 크기 설정 (모바일 최적화)
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          // 비율 유지하며 리사이징
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = (height * MAX_WIDTH) / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = (width * MAX_HEIGHT) / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          // 이미지 그리기
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // 압축된 이미지를 base64로 변환 (품질 0.6)
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.6);
+          resolve(compressedDataUrl);
+        };
+        img.onerror = () => reject(new Error("Image load failed"));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error("FileReader error"));
+      reader.readAsDataURL(file);
+    });
+  };
+
   // 비디오 썸네일 생성
   const createVideoThumbnail = (file: File): Promise<string> => {
     return new Promise((resolve) => {
@@ -45,22 +97,41 @@ function PhotoUploadContent() {
       video.currentTime = 1; // 1초 지점의 프레임
 
       video.onloadeddata = () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const thumbnail = canvas.toDataURL("image/jpeg", 0.8);
+        // 비디오도 압축된 썸네일 생성
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = video.videoWidth;
+        let height = video.videoHeight;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = (height * MAX_WIDTH) / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = (width * MAX_HEIGHT) / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(video, 0, 0, width, height);
+        const thumbnail = canvas.toDataURL("image/jpeg", 0.6);
         URL.revokeObjectURL(video.src);
         resolve(thumbnail);
       };
 
       video.onerror = () => {
         // 비디오 로드 실패 시 기본 이미지 사용
+        URL.revokeObjectURL(video.src);
         resolve("");
       };
     });
   };
 
-  // 파일 선택 처리 (미리보기용)
+  // 파일 선택 처리 (압축된 미리보기 생성)
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -87,21 +158,27 @@ function PhotoUploadContent() {
         let preview: string;
 
         if (file.type.startsWith("video/")) {
-          // 비디오의 경우 썸네일 생성
+          // 비디오의 경우 압축된 썸네일 생성
           preview = await createVideoThumbnail(file);
         } else {
-          // 이미지의 경우 기존 방식
-          const reader = new FileReader();
-          preview = await new Promise<string>((resolve) => {
-            reader.onload = (e) => resolve(e.target?.result as string);
-            reader.readAsDataURL(file);
-          });
+          // 이미지의 경우 압축된 미리보기 생성
+          try {
+            preview = await compressImage(file);
+          } catch (error) {
+            console.error("이미지 압축 실패:", error);
+            // 압축 실패시 원본 사용 (fallback)
+            const reader = new FileReader();
+            preview = await new Promise<string>((resolve) => {
+              reader.onload = (e) => resolve(e.target?.result as string);
+              reader.readAsDataURL(file);
+            });
+          }
         }
 
         const newPhoto: PreviewPhoto = {
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          file,
-          preview,
+          file, // 원본 파일 저장 (업로드용)
+          preview, // 압축된 미리보기
         };
 
         setPreviewPhotos((prev) => [...prev, newPhoto]);
@@ -116,7 +193,7 @@ function PhotoUploadContent() {
     }
   };
 
-  // 실제 업로드 처리 (클라이언트 직접 GCS 업로드)
+  // 실제 업로드 처리 (원본 파일 사용)
   const handleUpload = async () => {
     if (previewPhotos.length === 0) {
       toast({
@@ -172,19 +249,20 @@ function PhotoUploadContent() {
 
           const { uploadUrl, readUrl, fileName } = urlData;
 
-          // 2단계: GCS에 직접 업로드 (30% -> 80%)
+          // 2단계: GCS에 원본 파일 직접 업로드 (30% -> 80%)
           setPreviewPhotos((prev) =>
             prev.map((p) =>
               p.id === photo.id ? { ...p, uploadProgress: 30 } : p
             )
           );
 
+          // ⭐ 중요: 원본 파일(photo.file) 업로드
           const uploadResponse = await fetch(uploadUrl, {
             method: "PUT",
             headers: {
               "Content-Type": photo.file.type,
             },
-            body: photo.file,
+            body: photo.file, // 원본 파일 사용
           });
 
           if (!uploadResponse.ok) {
@@ -255,6 +333,13 @@ function PhotoUploadContent() {
       // 업로드 완료 후 잠시 대기
       await new Promise((resolve) => setTimeout(resolve, 500));
 
+      // 메모리 정리
+      previewPhotos.forEach((photo) => {
+        if (photo.preview.startsWith("blob:")) {
+          URL.revokeObjectURL(photo.preview);
+        }
+      });
+
       setPreviewPhotos([]);
       setIsModalOpen(false);
 
@@ -283,9 +368,16 @@ function PhotoUploadContent() {
     }
   };
 
-  // 미리보기 사진 삭제
+  // 미리보기 사진 삭제 (메모리 정리 포함)
   const removePreviewPhoto = (id: string) => {
-    setPreviewPhotos((prev) => prev.filter((photo) => photo.id !== id));
+    setPreviewPhotos((prev) => {
+      const photoToRemove = prev.find((photo) => photo.id === id);
+      // Blob URL 메모리 정리
+      if (photoToRemove?.preview.startsWith("blob:")) {
+        URL.revokeObjectURL(photoToRemove.preview);
+      }
+      return prev.filter((photo) => photo.id !== id);
+    });
   };
 
   // 파일 선택 버튼 클릭
@@ -325,8 +417,14 @@ function PhotoUploadContent() {
     setPreviewPhotos([]);
   };
 
-  // 모달 닫기
+  // 모달 닫기 (메모리 정리 포함)
   const closeModal = () => {
+    // 모든 미리보기 이미지 메모리 정리
+    previewPhotos.forEach((photo) => {
+      if (photo.preview.startsWith("blob:")) {
+        URL.revokeObjectURL(photo.preview);
+      }
+    });
     setIsModalOpen(false);
     setPreviewPhotos([]);
   };
