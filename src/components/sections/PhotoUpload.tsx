@@ -274,7 +274,9 @@ function PhotoUploadContent() {
           uploadProgress: 0,
         }))
       );
-      alert("업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert(
+        "업로드 중 오류가 발생했습니다. 다시 시도해주세요. (카카오톡으로 전송부탁드립니다.)"
+      );
       console.error("Upload error:", error);
     } finally {
       setIsUploading(false);
@@ -400,6 +402,21 @@ function PhotoUploadContent() {
                     <AlertTriangle className="w-4 h-4 mr-2" />
                     파일 첨부 이후에 업로드 버튼 꼭 눌러주세요!!
                   </p>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-left space-y-1">
+                    <p className="text-xs text-amber-800 font-semibold">
+                      📌 업로드 안내
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      • 영상은 100MB 이하만 가능합니다
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      • 영상은 개별로 업로드해주세요 (여러 개 동시 업로드 시
+                      실패할 수 있음)
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      • 실패 시 카카오톡으로 전송 부탁드립니다
+                    </p>
+                  </div>
                 </div>
 
                 {/* 파일 입력 */}
